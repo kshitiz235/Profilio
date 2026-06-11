@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Distributed Microservices on VMs",
+    "repo": "kshitiz235/virtualbox-microservices-project",
+    "description": "Running microservices across multiple VirtualBox VMs — service communication, networking, and deployment across separate machines.",
+    "tags": ["Microservices", "DevOps", "Virtualization", "JavaScript"]
+  },
+  {
+    "title": "Saveflow — Expense Manager",
+    "repo": "kshitiz235/Saveflow",
+    "description": "A Flutter mobile app to track daily spending and calculate personal expenses with a clean, simple UI.",
+    "tags": ["Flutter", "Dart", "Mobile"]
+  },
+  {
+    "title": "Carbon Footprint Estimator",
+    "repo": "kshitiz235/Carbon-footprint-extraction",
+    "description": "A lightweight Chrome extension that estimates the carbon footprint of the web pages you visit.",
+    "tags": ["Chrome Extension", "JavaScript", "Sustainability"]
+  },
+  {
+    "title": "DailyTrace — Time Logger",
+    "repo": "kshitiz235/DailyTrace",
+    "description": "A web app to log how you spend your time and visualize where your hours actually go.",
+    "tags": ["Web App", "Productivity", "JavaScript"]
+  },
+  {
+    "title": "Image Scraper Extension",
+    "repo": "kshitiz235/image-scraper-extension",
+    "description": "A Chrome extension that scrapes and bulk-downloads all images from any web page.",
+    "tags": ["Chrome Extension", "Web Scraping", "JavaScript"]
+  },
+  {
+    "title": "Power BI Data Analyses",
+    "repo": "kshitiz235/Power-Bi-Projects",
+    "description": "A collection of Power BI dashboards and data analyses across different datasets.",
+    "tags": ["Power BI", "Data Analytics"]
+  }
+]

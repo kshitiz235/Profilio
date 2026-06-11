@@ -1,0 +1,13 @@
+{
+  "name": "kshitiz-budhathoki-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Premium recruiter-focused engineering dashboard for Kshitiz Budhathoki.",
+  "scripts": {
+    "start": "python -m http.server 4173",
+    "dev": "python -m http.server 4173"
+  },
+  "dependencies": {
+    "motion": "^11.11.13"
+  }
+}

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Avatar">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C08457"/>
+      <stop offset="1" stop-color="#7A4F2E"/>
+    </linearGradient>
+    <linearGradient id="sk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4C9A8"/>
+      <stop offset="1" stop-color="#E9B48C"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#bg)"/>
+  <circle cx="100" cy="118" r="64" fill="rgba(255,255,255,.08)"/>
+  <!-- shoulders -->
+  <path d="M40 200c0-33 27-58 60-58s60 25 60 58z" fill="#1E293B"/>
+  <path d="M52 200c0-26 21-46 48-46s48 20 48 46z" fill="#334155"/>
+  <!-- neck -->
+  <rect x="86" y="108" width="28" height="34" rx="14" fill="url(#sk)"/>
+  <!-- head -->
+  <circle cx="100" cy="86" r="38" fill="url(#sk)"/>
+  <!-- hair -->
+  <path d="M62 80c0-24 18-40 38-40s38 16 38 40c0 6-2 12-2 12-3-14-10-22-10-22-8 8-26 10-40 6-6 8-8 16-8 16s-16-4-16-12z" fill="#3B2A22"/>
+  <!-- eyes -->
+  <circle cx="86" cy="86" r="3.4" fill="#27303F"/>
+  <circle cx="114" cy="86" r="3.4" fill="#27303F"/>
+  <!-- smile -->
+  <path d="M88 100c4 5 20 5 24 0" fill="none" stroke="#B5765A" stroke-width="3" stroke-linecap="round"/>
+</svg>
