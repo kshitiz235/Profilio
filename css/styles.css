@@ -549,6 +549,27 @@ a.repo-card:hover { transform: translateY(-4px); border-color: rgba(192,132,87,0
 .cmdk__item.active, .cmdk__item:hover { background: var(--accent-soft); color: var(--text); }
 .cmdk__empty { padding: 20px; text-align: center; color: var(--text-faint); font-size: 0.9rem; }
 
+/* ============ BLOG (dynamic) ============ */
+.blog-empty { grid-column: 1 / -1; padding: 34px; text-align: center; border-radius: var(--r-lg); color: var(--text-muted); }
+.blog-card { cursor: pointer; }
+.blog-card__cover { width: calc(100% + 44px); height: 140px; object-fit: cover; margin: -22px -22px 4px; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+.post-modal { max-width: 760px; }
+.post-modal__body { padding: 24px 30px 34px; overflow-y: auto; }
+.post-modal__cover { width: 100%; max-height: 320px; object-fit: cover; border-radius: var(--r-md); margin-bottom: 22px; }
+.post-modal__meta { font-family: var(--font-mono); font-size: 0.76rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+.post-modal__body h1, .post-modal__body h2, .post-modal__body h3 { font-family: var(--font-display); font-weight: 500; margin: 22px 0 10px; }
+.post-modal__body h2 { font-size: 1.5rem; } .post-modal__body h3 { font-size: 1.2rem; }
+.post-modal__body p { margin-bottom: 14px; line-height: 1.75; color: var(--text-muted); }
+.post-modal__body strong { color: var(--text); }
+.post-modal__body a { color: var(--accent); text-decoration: underline; }
+.post-modal__body ul, .post-modal__body ol { margin: 0 0 14px 22px; color: var(--text-muted); }
+.post-modal__body li { margin-bottom: 6px; }
+.post-modal__body code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface-2); padding: 2px 6px; border-radius: 6px; }
+.post-modal__body pre { background: var(--surface-2); border: 1px solid var(--glass-border); border-radius: var(--r-sm); padding: 14px 16px; overflow-x: auto; margin-bottom: 16px; }
+.post-modal__body pre code { background: none; padding: 0; }
+.post-modal__body blockquote { border-left: 3px solid var(--accent); padding-left: 14px; color: var(--text-muted); margin: 0 0 14px; }
+.post-modal__body img { max-width: 100%; border-radius: var(--r-sm); margin: 10px 0; }
+
 /* ============ RESUME MODAL ============ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 24px;

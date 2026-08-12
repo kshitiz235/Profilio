@@ -1,6 +1,8 @@
 /* =========================================================
    Engineering Dashboard · interactions
    ========================================================= */
+import { supabase } from "./supabase.js";
+
 (function () {
   "use strict";
 
@@ -353,48 +355,118 @@
   }
   loadGitHub();
 
-  /* ===================== FEATURED PROJECTS (data file in this repo) =====================
-     Curate with zero code: edit projects.json (sits next to index.html). Each item can be
-     as little as { "repo": "owner/name" } or richer: { title, repo, description, demo, image, tags }.
-     Edit the file on GitHub (or locally) -> site updates. If absent, built-in cards stay. */
-  const PROJECTS_MANIFEST = `projects.json`;
+  /* ===================== FEATURED PROJECTS ===================== */
   const prettifyName = (s) => s.replace(/[-_.]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()).trim();
 
-  async function loadFeaturedProjects() {
+  function renderProjectCards(list) {
     const grid = $("#projGrid");
-    if (!grid) return;
-    try {
-      const list = await fetch(PROJECTS_MANIFEST, { cache: "no-cache" }).then((r) => r.ok ? r.json() : Promise.reject(r.status));
-      if (!Array.isArray(list) || !list.length) return; // keep built-in cards
-      const base = PROJECTS_MANIFEST.replace(/\/projects\.json.*$/, "");
-      grid.innerHTML = list.slice(0, 6).map((p, i) => {
-        const repo = (p.repo || "").replace(/^https?:\/\/github\.com\//, "");
-        const title = p.title || (repo ? prettifyName(repo.split("/").pop()) : "Project");
-        const link = p.link || (repo ? `https://github.com/${repo}` : "");
-        const img = p.image
-          ? (/^https?:/.test(p.image) ? p.image : `${base}/${p.image}`)
-          : (repo ? `https://opengraph.githubassets.com/1/${repo}` : "");
-        const shotStyle = img
-          ? `background-image:url('${img}');background-size:cover;background-position:center`
-          : "--shot:linear-gradient(135deg,#C08457,#8A4F23)";
-        const tags = (p.tags || []).map((t) => `<span class="chip">${esc(t)}</span>`).join("");
-        const demo = p.demo ? `<a class="btn btn-sm btn-primary" href="${esc(p.demo)}" target="_blank" rel="noopener">Live Demo</a>` : "";
-        const code = link ? `<a class="btn btn-sm btn-ghost" href="${esc(link)}" target="_blank" rel="noopener">View Code ↗</a>` : "";
-        return `<article class="proj-card glass">
-          <div class="proj-shot" style="${shotStyle}">${i === 0 ? '<span class="proj-badge">Featured</span>' : ""}</div>
-          <div class="proj-body">
-            <h3>${esc(title)}</h3>
-            ${p.description ? `<p>${esc(p.description)}</p>` : ""}
-            ${tags ? `<div class="chip-cloud sm">${tags}</div>` : ""}
-            <div class="proj-links">${demo}${code}</div>
-          </div>
-        </article>`;
-      }).join("");
-    } catch (e) {
-      console.info("Projects manifest not found — using built-in featured projects.", e);
-    }
+    if (!grid || !list.length) return;
+    grid.innerHTML = list.slice(0, 6).map((p, i) => {
+      const repo = (p.repo || "").replace(/^https?:\/\/github\.com\//, "");
+      const title = p.title || (repo ? prettifyName(repo.split("/").pop()) : "Project");
+      const link = p.link || (repo ? `https://github.com/${repo}` : "");
+      const img = p.image || (repo ? `https://opengraph.githubassets.com/1/${repo}` : "");
+      const shotStyle = img
+        ? `background-image:url('${img}');background-size:cover;background-position:center`
+        : "--shot:linear-gradient(135deg,#C08457,#8A4F23)";
+      const tags = (p.tags || []).map((t) => `<span class="chip">${esc(t)}</span>`).join("");
+      const demo = p.demo ? `<a class="btn btn-sm btn-primary" href="${esc(p.demo)}" target="_blank" rel="noopener">Live Demo</a>` : "";
+      const code = link ? `<a class="btn btn-sm btn-ghost" href="${esc(link)}" target="_blank" rel="noopener">View Code ↗</a>` : "";
+      return `<article class="proj-card glass">
+        <div class="proj-shot" style="${shotStyle}">${i === 0 ? '<span class="proj-badge">Featured</span>' : ""}</div>
+        <div class="proj-body">
+          <h3>${esc(title)}</h3>
+          ${p.description ? `<p>${esc(p.description)}</p>` : ""}
+          ${tags ? `<div class="chip-cloud sm">${tags}</div>` : ""}
+          <div class="proj-links">${demo}${code}</div>
+        </div>
+      </article>`;
+    }).join("");
   }
-  loadFeaturedProjects();
+
+  // Fallback: projects.json in this repo (used only if Supabase has no projects).
+  async function loadProjectsJson() {
+    try {
+      const list = await fetch("projects.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : Promise.reject(r.status));
+      if (Array.isArray(list) && list.length) renderProjectCards(list);
+    } catch (e) { /* keep built-in cards */ }
+  }
+
+  /* ===================== SUPABASE CONTENT (profile · projects · blog) ===================== */
+  const applyField = (field, value) => {
+    if (value == null || value === "") return;
+    document.querySelectorAll(`[data-field="${field}"]`).forEach((el) => { el.textContent = value; });
+  };
+
+  const fmtDate = (d) => { try { return new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); } catch (e) { return ""; } };
+
+  function renderPosts(posts) {
+    const grid = $("#blogGrid");
+    if (!grid) return;
+    grid.innerHTML = posts.map((p, i) => `
+      <article class="blog-card glass" data-post="${i}">
+        ${p.cover_url ? `<img class="blog-card__cover" src="${esc(p.cover_url)}" alt="" />` : ""}
+        <span class="blog-tag">${esc(p.tag || "Article")}</span>
+        <h3>${esc(p.title)}</h3>
+        <p>${esc(p.excerpt || "")}</p>
+        <span class="blog-meta">${esc(fmtDate(p.created_at))}</span>
+      </article>`).join("");
+    grid.querySelectorAll("[data-post]").forEach((el) => el.addEventListener("click", () => openPost(posts[+el.dataset.post])));
+  }
+
+  let markedFn = null;
+  const postModal = $("#postModal");
+  async function openPost(p) {
+    if (!markedFn) {
+      try { markedFn = (await import("https://esm.sh/marked@12")).marked; }
+      catch (e) { markedFn = (s) => "<p>" + esc(s).replace(/\n\n+/g, "</p><p>").replace(/\n/g, "<br>") + "</p>"; }
+    }
+    $("#postModalTitle").textContent = p.title;
+    const cover = p.cover_url ? `<img class="post-modal__cover" src="${esc(p.cover_url)}" alt="" />` : "";
+    const meta = `<div class="post-modal__meta">${esc(p.tag || "Article")} · ${esc(fmtDate(p.created_at))}</div>`;
+    $("#postModalBody").innerHTML = cover + meta + markedFn(p.content || "");
+    postModal.hidden = false; document.body.style.overflow = "hidden";
+    $("#postModalBody").scrollTop = 0;
+  }
+  function closePost() { if (postModal) { postModal.hidden = true; document.body.style.overflow = ""; } }
+  if (postModal) {
+    $("#postModalClose").addEventListener("click", closePost);
+    postModal.addEventListener("click", (e) => { if (e.target === postModal) closePost(); });
+  }
+
+  async function loadContent() {
+    // Profile
+    try {
+      const { data } = await supabase.from("profile").select("*").eq("id", 1).single();
+      if (data) {
+        applyField("name", data.name); applyField("title", data.title); applyField("tagline", data.tagline);
+        applyField("about", data.about); applyField("location", data.location); applyField("focus", data.focus);
+        applyField("education", data.education);
+        if (data.avatar_url) document.querySelectorAll(".avatar").forEach((img) => { img.src = data.avatar_url; });
+        if (data.email) {
+          document.querySelectorAll('a[href^="mailto:"]').forEach((a) => { a.href = "mailto:" + data.email; });
+          document.querySelectorAll('[data-field="email"]').forEach((el) => { el.textContent = data.email; });
+        }
+        if (data.linkedin) document.querySelectorAll('a[href*="linkedin.com"]').forEach((a) => { a.href = data.linkedin; });
+        if (data.leetcode) document.querySelectorAll('a[href*="leetcode.com"]').forEach((a) => { a.href = data.leetcode; });
+      }
+    } catch (e) { console.info("Profile from Supabase unavailable.", e); }
+
+    // Projects: Supabase -> projects.json -> built-in cards
+    try {
+      const { data } = await supabase.from("projects").select("*").order("sort", { ascending: true }).order("created_at", { ascending: false });
+      if (data && data.length) {
+        renderProjectCards(data.map((p) => ({ title: p.title, repo: p.repo, description: p.description, demo: p.demo, image: p.image_url, tags: p.tags || [] })));
+      } else { loadProjectsJson(); }
+    } catch (e) { loadProjectsJson(); }
+
+    // Blog: published posts
+    try {
+      const { data } = await supabase.from("posts").select("*").eq("published", true).order("created_at", { ascending: false });
+      if (data && data.length) renderPosts(data);
+    } catch (e) { console.info("Posts from Supabase unavailable.", e); }
+  }
+  loadContent();
 
   /* ===================== LIVE LEETCODE (DSA) ===================== */
   async function loadLeetCode() {
@@ -617,7 +689,7 @@
       e.preventDefault();
       cmdk.hidden ? openCmdk() : closeCmdk();
     }
-    if (e.key === "Escape") { closeAI(); closeSidebar(); closeResume(); closeCmdk(); }
+    if (e.key === "Escape") { closeAI(); closeSidebar(); closeResume(); closeCmdk(); closePost(); }
   });
 
   /* ===================== CONTACT FORM ===================== */

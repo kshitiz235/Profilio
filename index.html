@@ -25,7 +25,7 @@
   <!-- Fonts: Newsreader (editorial serif display) + DM Sans (UI/body) + JetBrains Mono (labels) -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=13" />
+  <link rel="stylesheet" href="css/styles.css?v=14" />
 </head>
 <body>
   <!-- Skip link for keyboard users -->
@@ -150,14 +150,14 @@
             <span class="avatar-status" title="Available"></span>
           </div>
           <div class="hero__id">
-            <span class="eyebrow">Software Engineer · Researcher · Product Builder</span>
-            <h1 id="heroName">Kshitiz Budhathoki</h1>
-            <p class="hero__tag">A Computer Science graduate building software at the intersection of <strong>full-stack engineering, AI/ML, and data</strong> · from data pipelines and ML to intelligent systems and research.</p>
+            <span class="eyebrow" data-field="title">Software Engineer · Researcher · Product Builder</span>
+            <h1 id="heroName" data-field="name">Kshitiz Budhathoki</h1>
+            <p class="hero__tag" data-field="tagline">A Computer Science graduate building software at the intersection of <strong>full-stack engineering, AI/ML, and data</strong> · from data pipelines and ML to intelligent systems and research.</p>
 
             <div class="hero__meta">
-              <span class="meta-pill"><svg viewBox="0 0 24 24" class="ico ico-xs"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg> M.Tech, IIT Jodhpur · B.Tech, Jain University</span>
-              <span class="meta-pill"><svg viewBox="0 0 24 24" class="ico ico-xs"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/></svg> Nepal · Open to relocation</span>
-              <span class="meta-pill focus"><span class="focus-dot"></span> Current focus: DSA &amp; AI Systems</span>
+              <span class="meta-pill"><svg viewBox="0 0 24 24" class="ico ico-xs"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg> <span data-field="education">M.Tech, IIT Jodhpur · B.Tech, Jain University</span></span>
+              <span class="meta-pill"><svg viewBox="0 0 24 24" class="ico ico-xs"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/></svg> <span data-field="location">Nepal · Open to relocation</span></span>
+              <span class="meta-pill focus"><span class="focus-dot"></span> <span data-field="focus">Current focus: DSA &amp; AI Systems</span></span>
             </div>
 
             <div class="hero__cta">
@@ -218,7 +218,7 @@
         <article class="card glass reveal span-2">
           <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/></svg></div>
           <h3>About Me</h3>
-          <p>I'm a Computer Science graduate passionate about <strong>software engineering, artificial intelligence, machine learning, data engineering, and cybersecurity</strong>. I enjoy turning complex problems into reliable, well-architected software. My experience spans web development, data processing, machine learning, and software architecture · backed by a strong academic foundation and hands-on project &amp; research work.</p>
+          <p data-field="about">I'm a Computer Science graduate passionate about <strong>software engineering, artificial intelligence, machine learning, data engineering, and cybersecurity</strong>. I enjoy turning complex problems into reliable, well-architected software. My experience spans web development, data processing, machine learning, and software architecture · backed by a strong academic foundation and hands-on project &amp; research work.</p>
         </article>
 
         <article class="card glass reveal">
@@ -613,25 +613,10 @@
         <p class="section-sub">Writing on engineering, AI, career, and the craft.</p>
       </div>
 
-      <div class="blog-grid">
-        <a class="blog-card glass reveal" href="#" target="_blank" rel="noopener">
-          <span class="blog-tag">AI &amp; ML</span>
-          <h3>Building a Healthcare Chatbot with NLP</h3>
-          <p>Lessons from designing an intelligent health-query assistant end-to-end.</p>
-          <span class="blog-meta">Coming soon</span>
-        </a>
-        <a class="blog-card glass reveal" href="#" target="_blank" rel="noopener">
-          <span class="blog-tag">Software Engineering</span>
-          <h3>Web Scraping + ML for Real-World Price Comparison</h3>
-          <p>How I built the Deals Management System end-to-end with Python.</p>
-          <span class="blog-meta">Coming soon</span>
-        </a>
-        <a class="blog-card glass reveal" href="#" target="_blank" rel="noopener">
-          <span class="blog-tag">Career &amp; Productivity</span>
-          <h3>My DSA &amp; Problem-Solving Study System</h3>
-          <p>How I'm leveling up data structures, algorithms, and dynamic programming.</p>
-          <span class="blog-meta">Coming soon</span>
-        </a>
+      <div class="blog-grid" id="blogGrid">
+        <div class="blog-empty glass">
+          <p>No posts published yet. New writing will appear here soon.</p>
+        </div>
       </div>
     </section>
 
@@ -778,6 +763,19 @@
     </div>
   </div>
 
+  <!-- ============ BLOG POST MODAL ============ -->
+  <div class="modal-overlay" id="postModal" hidden>
+    <div class="modal glass post-modal" role="dialog" aria-modal="true" aria-label="Blog post">
+      <header class="modal__head">
+        <strong id="postModalTitle">Post</strong>
+        <button class="icon-btn" id="postModalClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" class="ico"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+      <div class="post-modal__body" id="postModalBody"></div>
+    </div>
+  </div>
+
   <!-- ============ RESUME PREVIEW MODAL ============ -->
   <div class="modal-overlay" id="resumeModal" hidden>
     <div class="modal glass" role="dialog" aria-modal="true" aria-label="Resume preview">
@@ -798,6 +796,6 @@
   <!-- Chart.js (global) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- App logic + Motion-powered animations + live GitHub data -->
-  <script type="module" src="js/app.js?v=15"></script>
+  <script type="module" src="js/app.js?v=16"></script>
 </body>
 </html>

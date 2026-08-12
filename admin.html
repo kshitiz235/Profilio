@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Admin · Kshitiz Budhathoki</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=13" />
+  <link rel="stylesheet" href="css/admin.css?v=1" />
+</head>
+<body class="admin-body">
+  <div class="bg-aurora" aria-hidden="true"></div>
+
+  <!-- ===== LOGIN ===== -->
+  <section class="login-wrap" id="loginWrap">
+    <form class="login-card glass" id="loginForm">
+      <div class="brand-mark" aria-hidden="true">KB</div>
+      <h1>Admin Sign In</h1>
+      <p class="login-sub">Manage your portfolio content.</p>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required />
+      </div>
+      <button class="btn btn-primary btn-block" type="submit" id="loginBtn">Sign In</button>
+      <p class="form-note" id="loginNote" role="status" aria-live="polite"></p>
+      <a class="login-back" href="index.html">← Back to site</a>
+    </form>
+  </section>
+
+  <!-- ===== ADMIN SHELL ===== -->
+  <div class="admin-shell" id="adminShell" hidden>
+    <header class="admin-top glass">
+      <div class="admin-top__brand"><span class="brand-mark sm">KB</span> <strong>Portfolio Admin</strong></div>
+      <div class="admin-top__actions">
+        <span class="admin-user" id="adminUser"></span>
+        <a class="btn btn-sm btn-ghost" href="index.html" target="_blank" rel="noopener">View site ↗</a>
+        <button class="btn btn-sm btn-ghost" id="signOutBtn">Sign out</button>
+      </div>
+    </header>
+
+    <nav class="admin-tabs">
+      <button class="admin-tab is-active" data-tab="profile">Profile</button>
+      <button class="admin-tab" data-tab="projects">Projects</button>
+      <button class="admin-tab" data-tab="blog">Blog</button>
+    </nav>
+
+    <main class="admin-main">
+      <!-- PROFILE -->
+      <section class="admin-panel is-active" id="panel-profile">
+        <div class="panel-head"><h2>Profile</h2><p>Your identity, links, and hero content.</p></div>
+        <form class="admin-form glass" id="profileForm">
+          <div class="avatar-row">
+            <img class="admin-avatar" id="avatarPreview" alt="Avatar preview" />
+            <div>
+              <label class="file-btn">Upload photo<input type="file" id="avatarFile" accept="image/*" hidden /></label>
+              <p class="hint">Square image works best.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Name</label><input id="p_name" type="text" /></div>
+            <div class="field"><label>Title / positioning</label><input id="p_title" type="text" /></div>
+          </div>
+          <div class="field"><label>Tagline (hero sentence)</label><textarea id="p_tagline" rows="2"></textarea></div>
+          <div class="field"><label>About me</label><textarea id="p_about" rows="4"></textarea></div>
+          <div class="grid-2">
+            <div class="field"><label>Location</label><input id="p_location" type="text" /></div>
+            <div class="field"><label>Current focus</label><input id="p_focus" type="text" /></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Education line</label><input id="p_education" type="text" /></div>
+            <div class="field"><label>GPA</label><input id="p_gpa" type="text" /></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Email</label><input id="p_email" type="email" /></div>
+            <div class="field"><label>LinkedIn URL</label><input id="p_linkedin" type="url" /></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>GitHub URL</label><input id="p_github" type="url" /></div>
+            <div class="field"><label>LeetCode URL</label><input id="p_leetcode" type="url" /></div>
+          </div>
+          <label class="check"><input type="checkbox" id="p_available" /> Available for hire</label>
+          <button class="btn btn-primary" type="submit" id="profileSave">Save profile</button>
+          <span class="save-note" id="profileNote" role="status" aria-live="polite"></span>
+        </form>
+      </section>
+
+      <!-- PROJECTS -->
+      <section class="admin-panel" id="panel-projects">
+        <div class="panel-head"><h2>Projects</h2><p>These show in your Featured Projects grid.</p></div>
+        <form class="admin-form glass" id="projectForm">
+          <input type="hidden" id="proj_id" />
+          <div class="proj-shot-row">
+            <img class="admin-shot" id="projImgPreview" alt="Project image" />
+            <div>
+              <label class="file-btn">Upload image<input type="file" id="projImgFile" accept="image/*" hidden /></label>
+              <p class="hint">Optional — leave blank to auto-use the GitHub repo image.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Title *</label><input id="proj_title" type="text" required /></div>
+            <div class="field"><label>Repo (owner/name)</label><input id="proj_repo" type="text" placeholder="kshitiz235/Saveflow" /></div>
+          </div>
+          <div class="field"><label>Description</label><textarea id="proj_description" rows="3"></textarea></div>
+          <div class="grid-2">
+            <div class="field"><label>Tags (comma separated)</label><input id="proj_tags" type="text" placeholder="Flutter, Dart, Mobile" /></div>
+            <div class="field"><label>Live demo URL</label><input id="proj_demo" type="url" /></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Sort order (lower = first)</label><input id="proj_sort" type="number" value="0" /></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="projSave">Add project</button>
+            <button class="btn btn-ghost" type="button" id="projReset" hidden>Cancel edit</button>
+            <span class="save-note" id="projNote" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+        <div class="admin-list" id="projectList"></div>
+      </section>
+
+      <!-- BLOG -->
+      <section class="admin-panel" id="panel-blog">
+        <div class="panel-head"><h2>Blog</h2><p>Write posts. Only "Published" ones appear on your site.</p></div>
+        <form class="admin-form glass" id="postForm">
+          <input type="hidden" id="post_id" />
+          <div class="proj-shot-row">
+            <img class="admin-shot" id="postImgPreview" alt="Cover image" />
+            <div>
+              <label class="file-btn">Upload cover<input type="file" id="postImgFile" accept="image/*" hidden /></label>
+              <p class="hint">Optional cover image.</p>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Title *</label><input id="post_title" type="text" required /></div>
+            <div class="field"><label>Tag / category</label><input id="post_tag" type="text" placeholder="AI & ML" /></div>
+          </div>
+          <div class="field"><label>Excerpt (short summary)</label><textarea id="post_excerpt" rows="2"></textarea></div>
+          <div class="field"><label>Content (Markdown supported)</label><textarea id="post_content" rows="10" class="mono"></textarea></div>
+          <label class="check"><input type="checkbox" id="post_published" /> Published (visible on site)</label>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="postSave">Add post</button>
+            <button class="btn btn-ghost" type="button" id="postReset" hidden>Cancel edit</button>
+            <span class="save-note" id="postNote" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+        <div class="admin-list" id="postList"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="js/admin.js?v=1"></script>
+</body>
+</html>
