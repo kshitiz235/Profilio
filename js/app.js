@@ -37,6 +37,167 @@ import { supabase } from "./supabase.js";
   const navItems = $$(".nav__item");
   const crumb = $("#crumbCurrent");
   const sections = $$("main .section[id]");
+
+  /* ===================== FLOATING RADIAL NAV + PER-SECTION IDENTITY ===================== */
+  const docEl = document.documentElement;
+  const SECTIONS = {
+    overview:     { color: "#C08457", font: "var(--font-display)", weight: 500, spacing: "-.01em", tc: "none",      rot: 0 },
+    summary:      { color: "#6E86B8", font: "var(--font-body)",    weight: 600, spacing: "0",      tc: "none",      rot: -4 },
+    skills:       { color: "#4F9D77", font: "var(--font-body)",    weight: 600, spacing: ".14em",  tc: "uppercase", rot: 0 },
+    experience:   { color: "#3AA6A0", font: "var(--font-body)",    weight: 600, spacing: ".02em",  tc: "none",      rot: 3 },
+    projects:     { color: "#C36B4E", font: "var(--font-display)", weight: 600, spacing: "-.01em", tc: "none",      rot: 6 },
+    github:       { color: "#7C86C8", font: "var(--font-mono)",    weight: 500, spacing: ".02em",  tc: "none",      rot: 0 },
+    research:     { color: "#9B6FA6", font: "var(--font-display)", weight: 500, spacing: "0",      tc: "none",      rot: -3 },
+    learning:     { color: "#7FA85C", font: "var(--font-body)",    weight: 600, spacing: ".05em",  tc: "none",      rot: 0 },
+    achievements: { color: "#CB9A3C", font: "var(--font-display)", weight: 500, spacing: ".01em",  tc: "none",      rot: 4 },
+    blog:         { color: "#A8454F", font: "var(--font-display)", weight: 500, spacing: "0",      tc: "none",      rot: 0 },
+    roadmap:      { color: "#5A8FB0", font: "var(--font-body)",    weight: 600, spacing: ".04em",  tc: "none",      rot: 2 },
+    contact:      { color: "#3FB0A6", font: "var(--font-body)",    weight: 600, spacing: ".16em",  tc: "uppercase", rot: 0 },
+  };
+  sections.forEach((s) => { const c = SECTIONS[s.id]; if (c) s.style.setProperty("--section", c.color); });
+
+  const wheelNav = $("#wheelNav");
+  const wheelEl = $("#wheel");
+  const wlName = $("#wlName"), wlEyebrow = $("#wlEyebrow");
+  const N = navItems.length, STEP = 360 / N;
+  let spokes = [];
+  let activeIdx = 0;
+  let curRot = 0, targetRot = 0, aw = 0, awTarget = 0, rafId = null;
+  let navLock = false;
+
+  function wheelGeom() {
+    const h = wheelEl.clientHeight, w = wheelEl.clientWidth;
+    return { cx: 24, cy: h / 2, R: Math.max(94, Math.min(132, h / 2 - 66, w - 70)) };
+  }
+  function wheelLayout() {
+    const { cx, cy, R } = wheelGeom();
+    const rr = R * (0.5 + 0.5 * aw);
+    spokes.forEach((sp, i) => {
+      let ang = i * STEP + curRot;
+      ang = ((ang + 180) % 360 + 360) % 360 - 180;
+      const rad = ang * Math.PI / 180;
+      const x = cx + rr * Math.cos(rad), y = cy + rr * Math.sin(rad);
+      const active = Math.abs(ang) < STEP / 2, inArc = Math.abs(ang) <= 96;
+      const scale = (active ? 1.26 : 1) * (0.82 + 0.18 * aw);
+      sp.el.style.transform = `translate(${x - 21}px, ${y - 21}px) scale(${scale})`;
+      const op = active ? (0.68 + 0.32 * aw) : (inArc ? 0.86 * aw : 0);
+      sp.el.style.opacity = op;
+      sp.el.style.pointerEvents = op > 0.15 ? "auto" : "none";
+      sp.el.style.zIndex = active ? 3 : 1;
+      sp.el.classList.toggle("is-active", active);
+    });
+  }
+  function tick() {
+    curRot += (targetRot - curRot) * 0.18;
+    aw += (awTarget - aw) * 0.16;
+    if (Math.abs(targetRot - curRot) < 0.05) curRot = targetRot;
+    if (Math.abs(awTarget - aw) < 0.004) aw = awTarget;
+    wheelLayout();
+    rafId = (curRot !== targetRot || aw !== awTarget) ? requestAnimationFrame(tick) : null;
+  }
+  function kick() {
+    if (reduceMotion) { curRot = targetRot; aw = awTarget; wheelLayout(); return; }
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+  function setLabel(i) {
+    const cfg = SECTIONS[navItems[i].dataset.section] || SECTIONS.overview;
+    wlName.textContent = spokes[i].label;
+    wlName.style.fontFamily = cfg.font; wlName.style.fontWeight = cfg.weight;
+    wlName.style.letterSpacing = cfg.spacing; wlName.style.textTransform = cfg.tc;
+    wlEyebrow.textContent = String(i + 1).padStart(2, "0") + " / " + String(N).padStart(2, "0");
+    docEl.style.setProperty("--section-now", cfg.color);
+  }
+  function setActive(i) {
+    i = Math.max(0, Math.min(N - 1, i));
+    activeIdx = i;
+    const base = -i * STEP;
+    targetRot = base + 360 * Math.round((curRot - base) / 360);
+    setLabel(i);
+    kick();
+  }
+  // Single central navigator used by wheel, scroll-wrap, keyboard and buttons.
+  function navigateToSection(i, opts = {}) {
+    i = ((i % N) + N) % N;
+    const el = document.getElementById(navItems[i].dataset.section);
+    setActive(i);
+    crumb.textContent = spokes[i].label;
+    try { history.replaceState(null, "", "#" + navItems[i].dataset.section); } catch (e) {}
+    if (opts.crossfade && !reduceMotion) {
+      const main = $("#main"); main.classList.add("nav-fade");
+      setTimeout(() => { if (el) el.scrollIntoView({ behavior: "auto" }); main.classList.remove("nav-fade"); }, 320);
+    } else if (el) {
+      el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    }
+  }
+
+  function initWheel() {
+    if (!wheelEl) return;
+    const label = wheelEl.querySelector(".wheel-label");
+    spokes = navItems.map((n, i) => {
+      const cfg = SECTIONS[n.dataset.section] || SECTIONS.overview;
+      const b = document.createElement("button");
+      b.className = "spoke"; b.type = "button";
+      b.style.setProperty("--spoke", cfg.color); b.style.setProperty("--rot", cfg.rot + "deg");
+      const name = n.querySelector("span").textContent;
+      b.setAttribute("aria-label", "Go to " + name); b.title = name;
+      b.innerHTML = n.querySelector("svg").outerHTML;
+      b.addEventListener("click", () => navigateToSection(i));
+      b.addEventListener("mouseenter", () => { wheelEl.classList.add("hovering"); setLabel(i); });
+      wheelEl.insertBefore(b, label);
+      return { el: b, id: n.dataset.section, label: name };
+    });
+    wheelEl.addEventListener("mouseleave", () => { wheelEl.classList.remove("hovering"); setLabel(activeIdx); });
+    setLabel(0); wheelLayout();
+
+    // proximity reveal
+    let sleepTimer = null;
+    const wake = () => { awTarget = 1; wheelNav.classList.add("awake"); clearTimeout(sleepTimer); kick(); };
+    const sleep = () => { awTarget = 0; wheelNav.classList.remove("awake"); kick(); };
+    $("#edgeZone").addEventListener("mouseenter", wake);
+    wheelNav.addEventListener("mouseenter", wake);
+    wheelNav.addEventListener("mouseleave", () => { sleepTimer = setTimeout(sleep, 260); });
+    wheelNav.addEventListener("focusin", wake);
+    wheelNav.addEventListener("focusout", (e) => { if (!wheelNav.contains(e.relatedTarget)) sleep(); });
+    window.addEventListener("mousemove", (e) => {
+      if (e.clientX < 120) wake();
+      else if (e.clientX > 300 && wheelNav.classList.contains("awake") && !wheelEl.matches(":hover")) { clearTimeout(sleepTimer); sleepTimer = setTimeout(sleep, 220); }
+    }, { passive: true });
+    window.addEventListener("resize", wheelLayout);
+
+    // drag over the wheel to rotate
+    let dragging = false, startY = 0, startIdx = 0, moved = false;
+    wheelEl.addEventListener("pointerdown", (e) => { dragging = true; moved = false; startY = e.clientY; startIdx = activeIdx; });
+    window.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const steps = Math.round((e.clientY - startY) / 46);
+      if (steps) moved = true;
+      const ni = Math.max(0, Math.min(N - 1, startIdx + steps));
+      if (ni !== activeIdx) setActive(ni);
+    });
+    window.addEventListener("pointerup", () => { if (dragging && moved) navigateToSection(activeIdx); dragging = false; });
+  }
+  initWheel();
+
+  /* ---------- Circular scroll: wrap Contact -> Overview (and Overview -> Contact) ---------- */
+  (function circularScroll() {
+    let accum = 0, accTimer = null;
+    window.addEventListener("wheel", (e) => {
+      if (navLock) return;
+      const doc = document.scrollingElement || document.documentElement;
+      const atBottom = window.scrollY + window.innerHeight >= doc.scrollHeight - 2;
+      const atTop = window.scrollY <= 1;
+      if (e.deltaY > 4 && atBottom) accum += e.deltaY;
+      else if (e.deltaY < -4 && atTop) accum += -e.deltaY;
+      else { accum = 0; return; }
+      clearTimeout(accTimer); accTimer = setTimeout(() => (accum = 0), 240);
+      if (accum > 150) {
+        accum = 0; navLock = true;
+        navigateToSection(atBottom ? 0 : N - 1, { crossfade: true });
+        setTimeout(() => (navLock = false), 1000);
+      }
+    }, { passive: true });
+  })();
+
   const navObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
@@ -45,6 +206,10 @@ import { supabase } from "./supabase.js";
           navItems.forEach((n) => n.classList.toggle("is-active", n.dataset.section === id));
           const active = navItems.find((n) => n.dataset.section === id);
           if (active) crumb.textContent = active.querySelector("span").textContent;
+          if (!navLock) {
+            const idx = navItems.findIndex((n) => n.dataset.section === id);
+            if (idx >= 0 && idx !== activeIdx) setActive(idx);
+          }
         }
       });
     },
@@ -547,9 +712,33 @@ import { supabase } from "./supabase.js";
     aiPanel.setAttribute("aria-hidden", "true");
     setTimeout(() => (aiOverlay.hidden = true), 240);
   };
-  $("#aiLaunch").addEventListener("click", openAI);
+  $("#aiLaunch")?.addEventListener("click", openAI);
+  $("#askAiBtn")?.addEventListener("click", openAI);
   $("#aiClose").addEventListener("click", closeAI);
   aiOverlay.addEventListener("click", closeAI);
+
+  /* ===================== HIRE ME DRAWER ===================== */
+  const hirePanel = $("#hirePanel");
+  const hireOverlay = $("#hireOverlay");
+  const openHire = () => {
+    hireOverlay.hidden = false;
+    hirePanel.classList.add("open");
+    hirePanel.setAttribute("aria-hidden", "false");
+    $("#hireClose").focus();
+  };
+  const closeHire = () => {
+    hirePanel.classList.remove("open");
+    hirePanel.setAttribute("aria-hidden", "true");
+    setTimeout(() => (hireOverlay.hidden = true), 240);
+  };
+  $("#hireBtn")?.addEventListener("click", openHire);
+  $("#hireClose")?.addEventListener("click", closeHire);
+  hireOverlay?.addEventListener("click", closeHire);
+  $("#hireCta")?.addEventListener("click", () => {
+    closeHire();
+    if (typeof navigateToSection === "function") navigateToSection(navItems.findIndex((n) => n.dataset.section === "contact"));
+    setTimeout(() => $("#cName")?.focus(), 500);
+  });
 
   // Lightweight rule-based "career assistant"
   const KB = [
@@ -574,7 +763,7 @@ import { supabase } from "./supabase.js";
     });
     return best && score > 0
       ? best.a
-      : "Great question! I can tell you about Alex's <strong>skills, experience, projects, achievements, learning, and how to get in touch</strong>. Try one of the suggestions above.";
+      : "Great question! I can tell you about Kshitiz's <strong>skills, experience, projects, achievements, learning, and how to get in touch</strong>. Try one of the suggestions above.";
   };
 
   const pushMsg = (html, who) => {
@@ -689,7 +878,7 @@ import { supabase } from "./supabase.js";
       e.preventDefault();
       cmdk.hidden ? openCmdk() : closeCmdk();
     }
-    if (e.key === "Escape") { closeAI(); closeSidebar(); closeResume(); closeCmdk(); closePost(); }
+    if (e.key === "Escape") { closeAI(); closeHire(); closeSidebar(); closeResume(); closeCmdk(); closePost(); }
   });
 
   /* ===================== CONTACT FORM ===================== */
@@ -701,14 +890,50 @@ import { supabase } from "./supabase.js";
     cMsg: (v) => (v.trim().length >= 10 ? "" : "Message should be at least 10 characters."),
   };
   const setError = (id, msg) => {
-    const field = $("#" + id).closest(".field");
-    field.classList.toggle("invalid", !!msg);
-    $(`.err[data-for="${id}"]`).textContent = msg;
+    const field = $("#" + id).closest(".term-step, .field");
+    if (field) field.classList.toggle("invalid", !!msg);
+    const el = $(`.err[data-for="${id}"]`); if (el) el.textContent = msg;
   };
   // validate on blur
   Object.keys(validators).forEach((id) =>
     $("#" + id).addEventListener("blur", (e) => setError(id, validators[id](e.target.value)))
   );
+
+  /* ---------- Step-based terminal navigation ---------- */
+  const stepEls = $$(".term-step");
+  const stepFields = ["cName", "cEmail", "cMsg"]; // one per content step
+  const termNext = $("#termNext"), termBack = $("#termBack"), termSubmit = $("#contactSubmit"), termProgress = $("#termProgress");
+  let curStep = 0;
+  function showStep(i) {
+    curStep = Math.max(0, Math.min(stepEls.length - 1, i));
+    stepEls.forEach((s, idx) => s.classList.toggle("is-active", idx === curStep));
+    if (termProgress) termProgress.style.width = ((curStep + 1) / stepEls.length) * 100 + "%";
+    if (termBack) termBack.hidden = curStep === 0;
+    const isReview = curStep === stepEls.length - 1;
+    if (termNext) termNext.hidden = isReview;
+    if (termSubmit) termSubmit.hidden = !isReview;
+    if (isReview) {
+      const r = $("#termReview");
+      if (r) r.innerHTML = `
+        <div><span>Name</span><b>${(($("#cName").value) || "—").replace(/</g, "&lt;")}</b></div>
+        <div><span>Reach</span><b>${(($("#cEmail").value) || "—").replace(/</g, "&lt;")}</b></div>
+        <div><span>Message</span><b>${(($("#cMsg").value) || "—").replace(/</g, "&lt;")}</b></div>`;
+    }
+    const inp = stepEls[curStep].querySelector("input, textarea");
+    if (inp) setTimeout(() => inp.focus(), 60);
+  }
+  if (termNext) termNext.addEventListener("click", () => {
+    if (curStep < stepFields.length) {
+      const id = stepFields[curStep], msg = validators[id]($("#" + id).value);
+      setError(id, msg);
+      if (msg) { $("#" + id).focus(); return; }
+    }
+    showStep(curStep + 1);
+  });
+  if (termBack) termBack.addEventListener("click", () => showStep(curStep - 1));
+  // Enter advances (except in the textarea)
+  ["cName", "cEmail"].forEach((id) => $("#" + id)?.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); termNext.click(); } }));
+  showStep(0);
 
   // To receive messages straight to your inbox: create a free form at https://formspree.io
   // and paste its endpoint here (e.g. "https://formspree.io/f/xxxxxx"). Leave blank to use mailto.
@@ -736,13 +961,13 @@ import { supabase } from "./supabase.js";
           body: JSON.stringify(data),
         });
         if (!r.ok) throw new Error(r.status);
-        form.reset();
-        note.textContent = "Thanks! Your message has been sent. Kshitiz will reply within 24h.";
+        form.reset(); showStep(0);
+        note.textContent = "Transmission sent ✓ Kshitiz will reply within 24h.";
         note.className = "form-note ok";
       } catch (err) {
         note.textContent = `Couldn't send right now — please email ${CONTACT_EMAIL} directly.`;
         note.className = "form-note";
-      } finally { btn.disabled = false; btn.textContent = "Send Message"; }
+      } finally { btn.disabled = false; btn.textContent = "Send transmission →"; }
       return;
     }
 
@@ -751,7 +976,7 @@ import { supabase } from "./supabase.js";
     const body = encodeURIComponent(`${data.message}\n\nFrom: ${data.name} (${data.email})`);
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
     setTimeout(() => {
-      btn.disabled = false; btn.textContent = "Send Message";
+      btn.disabled = false; btn.textContent = "Send transmission →";
       note.textContent = `Opening your email app… if nothing happens, email ${CONTACT_EMAIL}.`;
       note.className = "form-note ok";
     }, 600);
