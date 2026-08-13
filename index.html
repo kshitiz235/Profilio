@@ -25,7 +25,7 @@
   <!-- Fonts: Newsreader (editorial serif display) + DM Sans (UI/body) + JetBrains Mono (labels) -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=23" />
+  <link rel="stylesheet" href="css/styles.css?v=24" />
 </head>
 <body>
   <!-- Skip link for keyboard users -->
@@ -813,6 +813,25 @@
     </div>
   </div>
 
+  <!-- ============ PROJECT DETAIL MODAL ============ -->
+  <div class="modal-overlay" id="projectModal" hidden>
+    <div class="modal glass proj-modal" role="dialog" aria-modal="true" aria-label="Project details">
+      <div class="proj-modal__media" id="pmMedia">
+        <button class="icon-btn proj-modal__close" id="pmClose" aria-label="Close">
+          <svg viewBox="0 0 24 24" class="ico"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <span class="proj-modal__num" id="pmNum"></span>
+      </div>
+      <div class="proj-modal__body">
+        <span class="proj-modal__tag" id="pmTag"></span>
+        <h3 id="pmTitle"></h3>
+        <div class="proj-modal__desc" id="pmDesc"></div>
+        <div class="case__tech" id="pmTech"></div>
+        <div class="case__links" id="pmLinks"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ BLOG POST MODAL ============ -->
   <div class="modal-overlay" id="postModal" hidden>
     <div class="modal glass post-modal" role="dialog" aria-modal="true" aria-label="Blog post">
@@ -846,6 +865,6 @@
   <!-- Chart.js (global) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- App logic + Motion-powered animations + live GitHub data -->
-  <script type="module" src="js/app.js?v=24"></script>
+  <script type="module" src="js/app.js?v=25"></script>
 </body>
 </html>

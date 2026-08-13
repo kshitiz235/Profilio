@@ -532,34 +532,77 @@ import { supabase } from "./supabase.js";
   /* ===================== FEATURED PROJECTS ===================== */
   const prettifyName = (s) => s.replace(/[-_.]/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()).trim();
 
+  const PROJ_PALETTE = ["#C08457,#D6A23E", "#A8454F,#C08457", "#4F9D77,#3AA6A0", "#7C86C8,#9B6FA6", "#C36B4E,#CB9A3C", "#3FB0A6,#5A8FB0"];
+  const projFields = (p, i) => {
+    const repo = (p.repo || "").replace(/^https?:\/\/github\.com\//, "");
+    const title = p.title || (repo ? prettifyName(repo.split("/").pop()) : "Project");
+    const link = p.link || (repo ? `https://github.com/${repo}` : "");
+    const img = p.image || (repo ? `https://opengraph.githubassets.com/1/${repo}` : "");
+    const media = img
+      ? `background-image:url('${img}');background-size:cover;background-position:center`
+      : `background:linear-gradient(135deg,${PROJ_PALETTE[i % PROJ_PALETTE.length]})`;
+    return { repo, title, link, img, media, tags: p.tags || [], tagline: (p.tags || []).slice(0, 3).map(esc).join(" · "), demo: p.demo || "", description: p.description || "" };
+  };
+  let projectList = [];
+
   function renderProjectCards(list) {
     const grid = $("#projGrid");
     if (!grid || !list.length) return;
-    const palette = ["#C08457,#D6A23E", "#A8454F,#C08457", "#4F9D77,#3AA6A0", "#7C86C8,#9B6FA6", "#C36B4E,#CB9A3C", "#3FB0A6,#5A8FB0"];
-    grid.innerHTML = list.slice(0, 6).map((p, i) => {
-      const repo = (p.repo || "").replace(/^https?:\/\/github\.com\//, "");
-      const title = p.title || (repo ? prettifyName(repo.split("/").pop()) : "Project");
-      const link = p.link || (repo ? `https://github.com/${repo}` : "");
-      const img = p.image || (repo ? `https://opengraph.githubassets.com/1/${repo}` : "");
-      const media = img
-        ? `background-image:url('${img}');background-size:cover;background-position:center`
-        : `background:linear-gradient(135deg,${palette[i % palette.length]})`;
-      const tags = (p.tags || []).map((t) => `<span>${esc(t)}</span>`).join("");
-      const tagline = (p.tags || []).slice(0, 3).map(esc).join(" · ");
-      const demo = p.demo ? `<a class="btn btn-sm btn-primary" href="${esc(p.demo)}" target="_blank" rel="noopener">Live Demo</a>` : "";
-      const code = link ? `<a class="btn btn-sm btn-ghost" href="${esc(link)}" target="_blank" rel="noopener">View Code ↗</a>` : "";
-      return `<article class="case">
+    projectList = list.slice(0, 6);
+    grid.innerHTML = projectList.map((p, i) => {
+      const f = projFields(p, i);
+      const tags = f.tags.map((t) => `<span>${esc(t)}</span>`).join("");
+      const demo = f.demo ? `<a class="btn btn-sm btn-primary" href="${esc(f.demo)}" target="_blank" rel="noopener">Live Demo</a>` : "";
+      const code = f.link ? `<a class="btn btn-sm btn-ghost" href="${esc(f.link)}" target="_blank" rel="noopener">View Code ↗</a>` : "";
+      return `<article class="case" data-idx="${i}" tabindex="0" role="button" aria-label="${esc(f.title)} — open details">
         <div class="case__num">${String(i + 1).padStart(2, "0")}</div>
-        <div class="case__media" style="${media}"></div>
+        <div class="case__media" style="${f.media}"></div>
         <div class="case__info">
-          ${tagline ? `<span class="case__tag">${tagline}</span>` : ""}
-          <h3 class="case__title">${esc(title)}</h3>
-          ${p.description ? `<p class="case__desc">${esc(p.description)}</p>` : ""}
+          ${f.tagline ? `<span class="case__tag">${f.tagline}</span>` : ""}
+          <h3 class="case__title">${esc(f.title)}</h3>
+          ${f.description ? `<p class="case__desc">${esc(f.description)}</p>` : ""}
+          <span class="case__more">Read case study →</span>
           ${tags ? `<div class="case__tech">${tags}</div>` : ""}
           <div class="case__links">${demo}${code}</div>
         </div>
       </article>`;
     }).join("");
+    grid.querySelectorAll(".case").forEach((el) => {
+      const open = (e) => { if (e.target.closest("a")) return; openProjectCase(+el.dataset.idx); };
+      el.addEventListener("click", open);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(e); } });
+    });
+  }
+
+  /* ---- Project detail modal ---- */
+  const projectModal = $("#projectModal");
+  function openProjectCase(i) {
+    const p = projectList[i]; if (!p || !projectModal) return;
+    const f = projFields(p, i);
+    $("#pmNum").textContent = String(i + 1).padStart(2, "0");
+    $("#pmMedia").style.cssText = f.media;
+    $("#pmMedia").style.position = "relative";
+    $("#pmTag").textContent = f.tagline || "Project";
+    $("#pmTitle").textContent = f.title;
+    $("#pmDesc").textContent = f.description || "";
+    $("#pmTech").innerHTML = f.tags.map((t) => `<span>${esc(t)}</span>`).join("");
+    $("#pmLinks").innerHTML =
+      (f.demo ? `<a class="btn btn-sm btn-primary" href="${esc(f.demo)}" target="_blank" rel="noopener">Live Demo</a>` : "") +
+      (f.link ? `<a class="btn btn-sm btn-ghost" href="${esc(f.link)}" target="_blank" rel="noopener">View Code ↗</a>` : "");
+    projectModal.hidden = false; document.body.style.overflow = "hidden";
+  }
+  function closeProjectCase() { if (projectModal) { projectModal.hidden = true; document.body.style.overflow = ""; } }
+  if (projectModal) {
+    $("#pmClose").addEventListener("click", closeProjectCase);
+    projectModal.addEventListener("click", (e) => { if (e.target === projectModal) closeProjectCase(); });
+  }
+
+  // Fallback: projects.json in this repo (used only if Supabase has no projects).
+  async function loadProjectsJson() {
+    try {
+      const list = await fetch("projects.json", { cache: "no-cache" }).then((r) => r.ok ? r.json() : Promise.reject(r.status));
+      if (Array.isArray(list) && list.length) renderProjectCards(list);
+    } catch (e) { /* keep built-in cards */ }
   }
 
   // Fallback: projects.json in this repo (used only if Supabase has no projects).
@@ -894,7 +937,7 @@ import { supabase } from "./supabase.js";
       e.preventDefault();
       cmdk.hidden ? openCmdk() : closeCmdk();
     }
-    if (e.key === "Escape") { closeAI(); closeHire(); closeSidebar(); closeResume(); closeCmdk(); closePost(); }
+    if (e.key === "Escape") { closeAI(); closeHire(); closeSidebar(); closeResume(); closeCmdk(); closePost(); closeProjectCase(); }
   });
 
   /* ===================== CONTACT FORM ===================== */
