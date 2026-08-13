@@ -275,6 +275,15 @@ import { supabase } from "./supabase.js";
   }, { threshold: 0.5 });
   $$(".track > i[data-w]").forEach((b) => barObserver.observe(b));
 
+  /* ---------- Mission-map progress line ---------- */
+  const mmProg = $("#mmProgress");
+  if (mmProg) {
+    const mmMap = mmProg.closest(".missionmap");
+    new IntersectionObserver((entries, obs) => {
+      entries.forEach((e) => { if (e.isIntersecting) { mmProg.style.width = reduceMotion ? "84%" : "84%"; obs.disconnect(); } });
+    }, { threshold: 0.35 }).observe(mmMap);
+  }
+
   /* ---------- Progress rings ---------- */
   const ringObserver = new IntersectionObserver((entries, obs) => {
     entries.forEach((e) => {
@@ -526,24 +535,28 @@ import { supabase } from "./supabase.js";
   function renderProjectCards(list) {
     const grid = $("#projGrid");
     if (!grid || !list.length) return;
+    const palette = ["#C08457,#D6A23E", "#A8454F,#C08457", "#4F9D77,#3AA6A0", "#7C86C8,#9B6FA6", "#C36B4E,#CB9A3C", "#3FB0A6,#5A8FB0"];
     grid.innerHTML = list.slice(0, 6).map((p, i) => {
       const repo = (p.repo || "").replace(/^https?:\/\/github\.com\//, "");
       const title = p.title || (repo ? prettifyName(repo.split("/").pop()) : "Project");
       const link = p.link || (repo ? `https://github.com/${repo}` : "");
       const img = p.image || (repo ? `https://opengraph.githubassets.com/1/${repo}` : "");
-      const shotStyle = img
+      const media = img
         ? `background-image:url('${img}');background-size:cover;background-position:center`
-        : "--shot:linear-gradient(135deg,#C08457,#8A4F23)";
-      const tags = (p.tags || []).map((t) => `<span class="chip">${esc(t)}</span>`).join("");
+        : `background:linear-gradient(135deg,${palette[i % palette.length]})`;
+      const tags = (p.tags || []).map((t) => `<span>${esc(t)}</span>`).join("");
+      const tagline = (p.tags || []).slice(0, 3).map(esc).join(" · ");
       const demo = p.demo ? `<a class="btn btn-sm btn-primary" href="${esc(p.demo)}" target="_blank" rel="noopener">Live Demo</a>` : "";
       const code = link ? `<a class="btn btn-sm btn-ghost" href="${esc(link)}" target="_blank" rel="noopener">View Code ↗</a>` : "";
-      return `<article class="proj-card glass">
-        <div class="proj-shot" style="${shotStyle}">${i === 0 ? '<span class="proj-badge">Featured</span>' : ""}</div>
-        <div class="proj-body">
-          <h3>${esc(title)}</h3>
-          ${p.description ? `<p>${esc(p.description)}</p>` : ""}
-          ${tags ? `<div class="chip-cloud sm">${tags}</div>` : ""}
-          <div class="proj-links">${demo}${code}</div>
+      return `<article class="case">
+        <div class="case__num">${String(i + 1).padStart(2, "0")}</div>
+        <div class="case__media" style="${media}"></div>
+        <div class="case__info">
+          ${tagline ? `<span class="case__tag">${tagline}</span>` : ""}
+          <h3 class="case__title">${esc(title)}</h3>
+          ${p.description ? `<p class="case__desc">${esc(p.description)}</p>` : ""}
+          ${tags ? `<div class="case__tech">${tags}</div>` : ""}
+          <div class="case__links">${demo}${code}</div>
         </div>
       </article>`;
     }).join("");
@@ -569,12 +582,15 @@ import { supabase } from "./supabase.js";
     const grid = $("#blogGrid");
     if (!grid) return;
     grid.innerHTML = posts.map((p, i) => `
-      <article class="blog-card glass" data-post="${i}">
-        ${p.cover_url ? `<img class="blog-card__cover" src="${esc(p.cover_url)}" alt="" />` : ""}
-        <span class="blog-tag">${esc(p.tag || "Article")}</span>
-        <h3>${esc(p.title)}</h3>
-        <p>${esc(p.excerpt || "")}</p>
-        <span class="blog-meta">${esc(fmtDate(p.created_at))}</span>
+      <article class="blog-entry" data-post="${i}">
+        <span class="blog-entry__num">${String(i + 1).padStart(2, "0")}</span>
+        <div class="blog-entry__body">
+          <span class="blog-entry__tag">${esc(p.tag || "Article")} · ${esc(fmtDate(p.created_at))}</span>
+          <h3>${esc(p.title)}</h3>
+          <p>${esc(p.excerpt || "")}</p>
+        </div>
+        ${p.cover_url ? `<img class="blog-entry__cover" src="${esc(p.cover_url)}" alt="" />` : ""}
+        <span class="blog-entry__go">Read →</span>
       </article>`).join("");
     grid.querySelectorAll("[data-post]").forEach((el) => el.addEventListener("click", () => openPost(posts[+el.dataset.post])));
   }

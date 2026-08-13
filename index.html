@@ -25,7 +25,7 @@
   <!-- Fonts: Newsreader (editorial serif display) + DM Sans (UI/body) + JetBrains Mono (labels) -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=19" />
+  <link rel="stylesheet" href="css/styles.css?v=23" />
 </head>
 <body>
   <!-- Skip link for keyboard users -->
@@ -225,237 +225,177 @@
       </div>
     </section>
 
-    <!-- ===== EXECUTIVE SUMMARY ===== -->
+    <!-- ===== EXECUTIVE SUMMARY (editorial) ===== -->
     <section class="section" id="summary" aria-labelledby="aboutH">
-      <div class="section-head">
-        <h2 id="aboutH">Executive Summary</h2>
-        <p class="section-sub">Who I am, the journey so far, and where I'm headed.</p>
-      </div>
+      <div class="editorial">
+        <div class="editorial__lead reveal">
+          <span class="editorial__kicker">// PROFILE — 02</span>
+          <h2 id="aboutH" class="sr-head">Executive Summary</h2>
+          <blockquote class="editorial__quote"><span data-field="about">I'm a Computer Science graduate passionate about <strong>software engineering, AI/ML, data engineering, and cybersecurity</strong> — turning complex problems into reliable, well-architected software, backed by a strong academic foundation and hands-on research.</span></blockquote>
+          <div class="editorial__byline">— Kshitiz Budhathoki · Software Engineer · Researcher · Product Builder</div>
+        </div>
 
-      <div class="bento bento--overview">
-        <article class="card glass reveal span-2">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0"/></svg></div>
-          <h3>About Me</h3>
-          <p data-field="about">I'm a Computer Science graduate passionate about <strong>software engineering, artificial intelligence, machine learning, data engineering, and cybersecurity</strong>. I enjoy turning complex problems into reliable, well-architected software. My experience spans web development, data processing, machine learning, and software architecture · backed by a strong academic foundation and hands-on project &amp; research work.</p>
-        </article>
-
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M3 3v18h18M7 14l3-4 3 3 5-7"/></svg></div>
-          <h3>Professional Journey</h3>
-          <p>From B.Tech to a Master's in CSE, into research and real-world projects · and onward to building AI-driven and full-stack products.</p>
-        </article>
-
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/></svg></div>
-          <h3>Career Objectives</h3>
-          <ul class="tick-list">
-            <li>Secure a software engineering role</li>
-            <li>Build innovative AI applications</li>
-            <li>Publish research &amp; contribute to open source</li>
-          </ul>
-        </article>
-
-        <article class="card glass reveal span-2 ring-card">
-          <h3>Education Snapshot</h3>
-          <div class="ring-row">
-            <div class="ring-stat">
-              <svg class="prog-ring" viewBox="0 0 80 80" data-pct="80"><circle class="prog-bg" cx="40" cy="40" r="34"/><circle class="prog-fg" cx="40" cy="40" r="34"/></svg>
-              <span class="ring-center">7.95<small>/10</small></span>
-              <span class="ring-label">GPA</span>
-            </div>
-            <div class="edu-list">
-              <div class="edu-item"><strong>M.Tech, CSE · IIT Jodhpur</strong><span>Indian Institute of Technology · Research focus</span></div>
-              <div class="edu-item"><strong>B.Tech, CSE · Jain (Deemed-to-be University)</strong><span>Core engineering foundation</span></div>
-            </div>
+        <aside class="editorial__meta reveal">
+          <div class="meta-block">
+            <span class="meta-k">The journey</span>
+            <p>From B.Tech to a Master's in CSE, into research and real-world projects — and onward to building AI-driven, full-stack products.</p>
           </div>
-        </article>
+          <div class="meta-block">
+            <span class="meta-k">Currently pursuing</span>
+            <ul class="meta-list">
+              <li>A software engineering role</li>
+              <li>Innovative AI applications</li>
+              <li>Research &amp; open-source impact</li>
+            </ul>
+          </div>
+          <div class="meta-block">
+            <span class="meta-k">Education</span>
+            <div class="edu-line"><b>M.Tech, CSE</b> · IIT Jodhpur <em>2025 → now · CGPA 7.2</em></div>
+            <div class="edu-line"><b>B.Tech, CSE</b> · Jain (Deemed-to-be University) <em>CGPA 7.95</em></div>
+          </div>
+        </aside>
       </div>
     </section>
 
     <!-- ===== SKILLS CENTER ===== -->
     <section class="section" id="skills" aria-labelledby="skillsH">
       <div class="section-head">
-        <h2 id="skillsH">Interactive Skills Center</h2>
-        <p class="section-sub">Proficiency across engineering, AI, data, and platforms.</p>
+        <span class="sk-eyebrow">// SYSTEM · skills.map</span>
+        <h2 id="skillsH">Skills Center</h2>
+        <p class="section-sub">A living map of the stack I build with.</p>
       </div>
 
-      <div class="bento bento--skills">
-        <article class="card glass reveal span-2">
-          <h3>Technology Radar</h3>
+      <div class="skillmap">
+        <div class="skillmap__radar reveal">
           <div class="chart-wrap"><canvas id="skillsRadar" height="280" aria-label="Radar chart of skill competencies"></canvas></div>
-        </article>
+          <div class="sk-tier-note"><span class="d core"></span> core <span class="d strong"></span> strong <span class="d focus"></span> focus</div>
+        </div>
 
-        <article class="card glass reveal">
-          <h3>Programming</h3>
-          <div class="skill-bars" data-skills='[
-            {"name":"Python","pct":90},
-            {"name":"Java","pct":88},
-            {"name":"SQL","pct":82},
-            {"name":"JavaScript","pct":80},
-            {"name":"C++","pct":72}
-          ]'></div>
-        </article>
-
-        <article class="card glass reveal">
-          <h3>Web Development</h3>
-          <div class="chip-cloud">
-            <span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span>
-            <span class="chip">React</span><span class="chip">Node.js</span>
+        <div class="skillmap__clusters reveal">
+          <div class="sk-cluster">
+            <span class="sk-cluster__label">languages/</span>
+            <div class="sk-nodes">
+              <span class="sk-node core">Python</span><span class="sk-node core">Java</span>
+              <span class="sk-node strong">SQL</span><span class="sk-node strong">JavaScript</span><span class="sk-node strong">C++</span>
+            </div>
           </div>
-          <h3 class="mt">Databases</h3>
-          <div class="chip-cloud">
-            <span class="chip">MySQL</span><span class="chip">SQL</span>
+          <div class="sk-cluster">
+            <span class="sk-cluster__label">web &amp; backend/</span>
+            <div class="sk-nodes">
+              <span class="sk-node core">HTML</span><span class="sk-node core">CSS</span>
+              <span class="sk-node strong">React</span><span class="sk-node strong">Node.js</span><span class="sk-node strong">MySQL</span>
+            </div>
           </div>
-        </article>
-
-        <article class="card glass reveal">
-          <h3>Tools &amp; Platforms</h3>
-          <div class="chip-cloud">
-            <span class="chip">Git</span><span class="chip">GitHub</span><span class="chip">Linux</span>
-            <span class="chip">Docker</span><span class="chip">VS Code</span>
+          <div class="sk-cluster">
+            <span class="sk-cluster__label">ai &amp; data/</span>
+            <div class="sk-nodes">
+              <span class="sk-node strong">Machine Learning</span><span class="sk-node strong">NLP</span>
+              <span class="sk-node strong">Data Processing</span><span class="sk-node">Power BI</span>
+            </div>
           </div>
-          <h3 class="mt">Areas of Interest</h3>
-          <div class="chip-cloud">
-            <span class="chip">AI / ML</span><span class="chip">Data Engineering</span><span class="chip">Cybersecurity</span>
-            <span class="chip">Cloud</span><span class="chip">Stock Analytics</span>
+          <div class="sk-cluster">
+            <span class="sk-cluster__label">tools &amp; cloud/</span>
+            <div class="sk-nodes">
+              <span class="sk-node core">Git</span><span class="sk-node core">GitHub</span><span class="sk-node core">VS Code</span>
+              <span class="sk-node strong">Linux</span><span class="sk-node strong">Docker</span>
+            </div>
           </div>
-        </article>
+          <div class="sk-cluster sk-cluster--wide">
+            <span class="sk-cluster__label">focus areas/</span>
+            <div class="sk-nodes">
+              <span class="sk-node focus">AI / ML</span><span class="sk-node focus">Data Engineering</span>
+              <span class="sk-node focus">Cybersecurity</span><span class="sk-node focus">Cloud</span><span class="sk-node focus">Stock Analytics</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ===== EXPERIENCE TIMELINE ===== -->
     <section class="section" id="experience" aria-labelledby="expH">
       <div class="section-head">
-        <h2 id="expH">Experience Timeline</h2>
-        <p class="section-sub">Academic journey, projects, and research activities.</p>
+        <span class="jt-eyebrow">// TIMELINE</span>
+        <h2 id="expH">The Journey</h2>
+        <p class="section-sub">A path through study, research, and building.</p>
       </div>
 
-      <ol class="timeline">
-        <li class="tl-item reveal">
-          <div class="tl-marker"></div>
-          <div class="card glass">
-            <div class="tl-head">
-              <div>
-                <h3>M.Tech in Computer Science &amp; Engineering</h3>
-                <span class="tl-org">IIT Jodhpur · Research-oriented</span>
-              </div>
-              <span class="tl-date">GPA 6/10</span>
-            </div>
-            <ul class="tick-list">
+      <div class="jtimeline">
+        <article class="jt-item reveal">
+          <div class="jt-date">2025<span>→ present</span></div>
+          <div class="jt-line"><span class="jt-dot"></span></div>
+          <div class="jt-content">
+            <span class="jt-kind">Education · Research · CGPA 7.2 (3rd sem)</span>
+            <h3>M.Tech — Computer Science &amp; Engineering</h3>
+            <div class="jt-org">IIT Jodhpur</div>
+            <ul>
               <li>Specialized in AI, machine learning, data analytics, and intelligent systems.</li>
-              <li>Conducted research on intelligent healthcare chat systems (NLP).</li>
-              <li>Built software architecture, data-processing, and web-development skills.</li>
+              <li>Research on intelligent healthcare chat systems (NLP).</li>
+              <li>Built software-architecture, data-processing, and web-development depth.</li>
             </ul>
-            <div class="chip-cloud sm"><span class="chip">AI / ML</span><span class="chip">NLP</span><span class="chip">Data Analytics</span></div>
+            <div class="jt-tags"><span>AI / ML</span><span>NLP</span><span>Data Analytics</span></div>
           </div>
-        </li>
+        </article>
 
-        <li class="tl-item reveal">
-          <div class="tl-marker"></div>
-          <div class="card glass">
-            <div class="tl-head">
-              <div>
-                <h3>Independent Projects &amp; Open Source</h3>
-                <span class="tl-org">Self-driven · github.com/kshitiz235</span>
-              </div>
-              <span class="tl-date">Ongoing</span>
-            </div>
-            <ul class="tick-list">
+        <article class="jt-item reveal">
+          <div class="jt-date">Now<span>ongoing</span></div>
+          <div class="jt-line"><span class="jt-dot"></span></div>
+          <div class="jt-content">
+            <span class="jt-kind">Engineering · Open Source</span>
+            <h3>Independent Projects &amp; Open Source</h3>
+            <div class="jt-org">github.com/kshitiz235</div>
+            <ul>
               <li>Built end-to-end projects across <strong>ML, NLP, and Android</strong>.</li>
-              <li>Active <strong>open-source contributor</strong> maintaining public repositories.</li>
+              <li>Active open-source contributor maintaining public repositories.</li>
             </ul>
-            <div class="chip-cloud sm"><span class="chip">Python</span><span class="chip">Java</span><span class="chip">React</span><span class="chip">Node.js</span></div>
+            <div class="jt-tags"><span>Python</span><span>Java</span><span>React</span><span>Node.js</span></div>
           </div>
-        </li>
+        </article>
 
-        <li class="tl-item reveal">
-          <div class="tl-marker"></div>
-          <div class="card glass">
-            <div class="tl-head">
-              <div>
-                <h3>B.Tech in Computer Science &amp; Engineering</h3>
-                <span class="tl-org">Jain (Deemed-to-be University) · Core CS Foundation</span>
-                 </div>
-              <span class="tl-date">GPA 7.95/10</span>
-            </div>
-              </div>
-              <span class="tl-date">Foundation</span>
-            </div>
-            <ul class="tick-list">
-              <li>Built strong fundamentals in DSA, databases, and software engineering.</li>
+        <article class="jt-item reveal">
+          <div class="jt-date">B.Tech<span>foundation</span></div>
+          <div class="jt-line"><span class="jt-dot"></span></div>
+          <div class="jt-content">
+            <span class="jt-kind">Education · GPA 7.95 / 10</span>
+            <h3>B.Tech — Computer Science &amp; Engineering</h3>
+            <div class="jt-org">Jain (Deemed-to-be University)</div>
+            <ul>
+              <li>Strong fundamentals in DSA, databases, and software engineering.</li>
             </ul>
-            <div class="chip-cloud sm"><span class="chip">Java</span><span class="chip">DSA</span><span class="chip">DBMS</span></div>
+            <div class="jt-tags"><span>Java</span><span>DSA</span><span>DBMS</span></div>
           </div>
-        </li>
-      </ol>
+        </article>
+      </div>
     </section>
 
     <!-- ===== PROJECTS ===== -->
     <section class="section" id="projects" aria-labelledby="projH">
       <div class="section-head">
-        <h2 id="projH">Featured Projects</h2>
-        <p class="section-sub">Selected work with stack, impact, and source links.</p>
+        <span class="cs-eyebrow">// SELECTED WORK</span>
+        <h2 id="projH">Case Studies</h2>
+        <p class="section-sub">Products and projects, built end-to-end.</p>
       </div>
 
-      <div class="proj-grid" id="projGrid">
-        <article class="proj-card glass reveal">
-          <div class="proj-shot" style="--shot:linear-gradient(135deg,#C08457,#D6A23E)">
-            <span class="proj-badge">Featured</span>
-            <span class="proj-emoji" aria-hidden="true">
-              <svg viewBox="0 0 24 24" class="ico"><path d="M3 3v18h18M7 14l3-4 3 3 5-7"/></svg>
-            </span>
-          </div>
-          <div class="proj-body">
-            <h3>Deals Management System</h3>
-            <p>Compares prices of identical products across multiple websites using machine-learning algorithms and web scraping.</p>
-            <div class="proj-metrics">
-              <span><strong>Multi-site</strong> price compare</span>
-              <span><strong>ML</strong> matching</span>
-            </div>
-            <div class="chip-cloud sm"><span class="chip">Python</span><span class="chip">Machine Learning</span><span class="chip">Web Scraping</span><span class="chip">Data Processing</span></div>
-            <div class="proj-links">
-              <a class="btn btn-sm btn-ghost" href="https://github.com/kshitiz235" target="_blank" rel="noopener">View on GitHub ↗</a>
-            </div>
+      <div class="caselist" id="projGrid">
+        <article class="case reveal">
+          <div class="case__num">01</div>
+          <div class="case__media" style="background:linear-gradient(135deg,#C08457,#D6A23E)"></div>
+          <div class="case__info">
+            <span class="case__tag">Python · Machine Learning · Web Scraping</span>
+            <h3 class="case__title">Deals Management System</h3>
+            <p class="case__desc">Compares prices of identical products across multiple websites using ML algorithms and web scraping.</p>
+            <div class="case__tech"><span>Python</span><span>Machine Learning</span><span>Web Scraping</span></div>
+            <div class="case__links"><a class="btn btn-sm btn-ghost" href="https://github.com/kshitiz235" target="_blank" rel="noopener">View Code ↗</a></div>
           </div>
         </article>
-
-        <article class="proj-card glass reveal">
-          <div class="proj-shot" style="--shot:linear-gradient(135deg,#A8454F,#C08457)">
-            <span class="proj-emoji" aria-hidden="true">
-              <svg viewBox="0 0 24 24" class="ico"><path d="M8 10h8M8 14h5M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg>
-            </span>
-          </div>
-          <div class="proj-body">
-            <h3>Health Bot Chat System</h3>
-            <p>An intelligent healthcare chatbot that assists users with health-related queries and recommendations using NLP.</p>
-            <div class="proj-metrics">
-              <span><strong>NLP</strong> powered</span>
-              <span><strong>Research</strong> backed</span>
-            </div>
-            <div class="chip-cloud sm"><span class="chip">NLP</span><span class="chip">Python</span><span class="chip">AI Chatbot</span></div>
-            <div class="proj-links">
-              <a class="btn btn-sm btn-ghost" href="https://github.com/kshitiz235" target="_blank" rel="noopener">View on GitHub ↗</a>
-            </div>
-          </div>
-        </article>
-
-        <article class="proj-card glass reveal">
-          <div class="proj-shot" style="--shot:linear-gradient(135deg,#7C8794,#4F9D77)">
-            <span class="proj-emoji" aria-hidden="true">
-              <svg viewBox="0 0 24 24" class="ico"><path d="M7 2h10v20H7zM11 18h2"/></svg>
-            </span>
-          </div>
-          <div class="proj-body">
-            <h3>Instagram Reels Limiter</h3>
-            <p>Android app that tracks daily reel-scrolling activity, lets users set limits, and auto-closes Instagram when exceeded.</p>
-            <div class="proj-metrics">
-              <span><strong>Usage</strong> tracking</span>
-              <span><strong>Auto-limit</strong> enforcement</span>
-            </div>
-            <div class="chip-cloud sm"><span class="chip">Android</span><span class="chip">Java</span><span class="chip">Background Services</span></div>
-            <div class="proj-links">
-              <a class="btn btn-sm btn-ghost" href="https://github.com/kshitiz235" target="_blank" rel="noopener">View on GitHub ↗</a>
-            </div>
+        <article class="case reveal">
+          <div class="case__num">02</div>
+          <div class="case__media" style="background:linear-gradient(135deg,#A8454F,#C08457)"></div>
+          <div class="case__info">
+            <span class="case__tag">NLP · Python · AI</span>
+            <h3 class="case__title">Health Bot Chat System</h3>
+            <p class="case__desc">An intelligent healthcare chatbot that assists users with health-related queries and recommendations using NLP.</p>
+            <div class="case__tech"><span>NLP</span><span>Python</span><span>AI Chatbot</span></div>
+            <div class="case__links"><a class="btn btn-sm btn-ghost" href="https://github.com/kshitiz235" target="_blank" rel="noopener">View Code ↗</a></div>
           </div>
         </article>
       </div>
@@ -465,14 +405,15 @@
     <!-- ===== GITHUB ANALYTICS ===== -->
     <section class="section" id="github" aria-labelledby="ghH">
       <div class="section-head">
-        <h2 id="ghH">GitHub Analytics Center</h2>
-        <p class="section-sub">Contribution activity and repository signal at a glance.</p>
+        <span class="gh-eyebrow">// TELEMETRY · github.stream</span>
+        <h2 id="ghH">Developer Analytics</h2>
+        <p class="section-sub">Live engineering signal from @kshitiz235.</p>
       </div>
 
-      <div class="bento bento--gh">
-        <article class="card glass reveal span-2">
-          <div class="card-head-row">
-            <h3>Contribution Graph</h3>
+      <div class="telemetry">
+        <div class="tel-hero reveal">
+          <div class="tel-hero__head">
+            <span class="tel-label">CONTRIBUTION_STREAM</span>
             <span class="muted-pill" id="ghTotal">Active open-source contributor</span>
           </div>
           <div class="heatmap" id="heatmap" aria-label="GitHub contribution heatmap"></div>
@@ -481,64 +422,78 @@
             <i class="hm-cell l0"></i><i class="hm-cell l1"></i><i class="hm-cell l2"></i><i class="hm-cell l3"></i><i class="hm-cell l4"></i>
             <span>More</span>
           </div>
-        </article>
+        </div>
 
-        <article class="card glass reveal">
-          <h3>Most Used Languages</h3>
-          <div class="chart-wrap sm"><canvas id="langDonut" height="220" aria-label="Doughnut chart of most used languages"></canvas></div>
-        </article>
+        <div class="tel-stats reveal">
+          <div><span class="tel-num" id="ghRepos">·</span><span class="tel-lbl">public_repos</span></div>
+          <div><span class="tel-num" id="ghStars">·</span><span class="tel-lbl">total_stars</span></div>
+          <div><span class="tel-num" id="ghFollowers">·</span><span class="tel-lbl">followers</span></div>
+          <div><span class="tel-num" id="ghLangs">·</span><span class="tel-lbl">languages</span></div>
+        </div>
 
-        <article class="card glass reveal span-3">
-          <h3>Commit Activity (per week)</h3>
-          <div class="chart-wrap"><canvas id="activityLine" height="220" aria-label="Line chart of weekly commit activity"></canvas></div>
-        </article>
-
-        <article class="card glass reveal stat-grid-card">
-          <h3>Repository Overview</h3>
-          <div class="mini-stats">
-            <div><span class="mini-num" id="ghRepos">·</span><span class="mini-lbl">Public Repos</span></div>
-            <div><span class="mini-num" id="ghStars">·</span><span class="mini-lbl">Total Stars</span></div>
-            <div><span class="mini-num" id="ghFollowers">·</span><span class="mini-lbl">Followers</span></div>
-            <div><span class="mini-num" id="ghLangs">·</span><span class="mini-lbl">Languages</span></div>
+        <div class="tel-row">
+          <div class="tel-panel reveal">
+            <span class="tel-label">LANGUAGE_DISTRIBUTION</span>
+            <div class="chart-wrap sm"><canvas id="langDonut" height="220" aria-label="Doughnut chart of most used languages"></canvas></div>
           </div>
-        </article>
+          <div class="tel-panel reveal">
+            <span class="tel-label">COMMIT_ACTIVITY / week</span>
+            <div class="chart-wrap"><canvas id="activityLine" height="220" aria-label="Line chart of weekly commit activity"></canvas></div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ===== RESEARCH & PUBLICATIONS ===== -->
     <section class="section" id="research" aria-labelledby="resH">
       <div class="section-head">
-        <h2 id="resH">Research &amp; Publications</h2>
-        <p class="section-sub">Research interests, projects, and what's next.</p>
+        <span class="rs-eyebrow">// RESEARCH · lab</span>
+        <h2 id="resH">Research</h2>
+        <p class="section-sub">An academic view of my interests, questions, and work.</p>
       </div>
 
-      <div class="bento bento--learn">
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M9 3v5L4 19a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L15 8V3M9 3h6M8 14h8"/></svg></div>
-          <h3>Research Interests</h3>
-          <div class="chip-cloud">
-            <span class="chip">Artificial Intelligence</span><span class="chip">Health Technology</span>
-            <span class="chip">Intelligent Chat Systems</span><span class="chip">Data Analytics</span>
-            <span class="chip">Human-Computer Interaction</span>
+      <div class="research-lab">
+        <div class="rs-left reveal">
+          <div class="rs-block">
+            <span class="rs-k">Research areas</span>
+            <div class="rs-areas">
+              <span>Artificial Intelligence</span>
+              <span>Health Technology</span>
+              <span>Intelligent Chat Systems</span>
+              <span>Data Analytics</span>
+              <span>Human-Computer Interaction</span>
+            </div>
           </div>
-        </article>
+          <div class="rs-block">
+            <span class="rs-k">Research questions</span>
+            <ol class="rs-questions">
+              <li>Can an NLP assistant reliably understand health queries and return safe, useful recommendations?</li>
+              <li>How do we make healthcare AI explainable and trustworthy for real users?</li>
+              <li>Which signals best turn raw data into actionable insight?</li>
+            </ol>
+          </div>
+        </div>
 
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M8 10h8M8 14h5M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8z"/></svg></div>
-          <h3>Research Project</h3>
-          <p><strong>Intelligent Healthcare Chat Systems</strong> · designing an NLP-driven chatbot that understands health queries and gives helpful, safe recommendations.</p>
-          <div class="chip-cloud sm"><span class="chip">NLP</span><span class="chip">Healthcare AI</span></div>
-        </article>
-
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></div>
-          <h3>Future Research Plans</h3>
-          <ul class="tick-list">
-            <li>Publish peer-reviewed papers</li>
-            <li>Explainable &amp; trustworthy AI</li>
-            <li>AI for healthcare &amp; data analytics</li>
-          </ul>
-        </article>
+        <div class="rs-right reveal">
+          <div class="rs-paper">
+            <span class="rs-tag">ACTIVE STUDY</span>
+            <h3>Intelligent Healthcare Chat Systems</h3>
+            <div class="rs-meta"><span>Field —</span> NLP · Healthcare AI · HCI</div>
+            <p class="rs-abstract">An NLP-driven assistant that interprets health-related queries and returns helpful, safe recommendations, with a focus on reliability and explainability.</p>
+            <div class="rs-method">
+              <span class="rs-k">Methodology</span>
+              <div class="rs-steps"><span>01 · Collect</span><span>02 · Model (NLP)</span><span>03 · Evaluate</span><span>04 · Refine</span></div>
+            </div>
+          </div>
+          <div class="rs-block">
+            <span class="rs-k">Next / publications</span>
+            <ul class="rs-next">
+              <li>Publish peer-reviewed papers</li>
+              <li>Explainable &amp; trustworthy AI</li>
+              <li>AI for healthcare &amp; data analytics</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -596,85 +551,93 @@
     <!-- ===== ACHIEVEMENTS ===== -->
     <section class="section" id="achievements" aria-labelledby="achH">
       <div class="section-head">
-        <h2 id="achH">Achievements Center</h2>
+        <span class="ach-eyebrow">// MILESTONES</span>
+        <h2 id="achH">Achievements</h2>
         <p class="section-sub">Academic, professional, and technical milestones.</p>
       </div>
 
-      <div class="achv-grid">
-        <article class="card glass reveal">
-          <div class="card-icon gold"><svg viewBox="0 0 24 24" class="ico"><path d="M22 10L12 5 2 10l10 5 10-5zM6 12v5c0 1 3 3 6 3s6-2 6-3v-5"/></svg></div>
-          <h3>Academic</h3>
-          <p>Master's degree in CSE with a strong GPA of 7.95/10, building on a B.Tech in CSE.</p>
-        </article>
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.7A5.2 5.2 0 0 0 20 4.8a4.9 4.9 0 0 0-.1-3.6s-1.1-.3-3.6 1.4a12.4 12.4 0 0 0-6.6 0C7.2.9 6.1 1.2 6.1 1.2A4.9 4.9 0 0 0 6 4.8a5.2 5.2 0 0 0-1.4 3.6c0 5.2 3.2 6.4 6.2 6.7a3.4 3.4 0 0 0-.9 2.6V22"/></svg></div>
-          <h3>Open Source</h3>
-          <p>Active open-source contributor on GitHub (<strong>@kshitiz235</strong>) maintaining multiple public repositories.</p>
-        </article>
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M3 7l9-4 9 4-9 4-9-4zM3 12l9 4 9-4"/></svg></div>
-          <h3>Projects &amp; Open Source</h3>
-          <p>Multiple software projects across ML, NLP, and Android · plus active open-source contributions.</p>
-        </article>
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M9 3v5L4 19a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3L15 8V3M9 3h6"/></svg></div>
-          <h3>Research</h3>
-          <p>Research experience in intelligent health-bot systems and data-driven AI.</p>
-        </article>
+      <div class="achv-hall">
+        <div class="achv-marquee reveal">
+          <span class="achv-num">7.95</span>
+          <span class="achv-cap">B.Tech CGPA · CSE, Jain University</span>
+          <div class="achv-mini">
+            <div><b>174+</b><span>LeetCode solved</span></div>
+            <div><b>20+</b><span>public repos</span></div>
+          </div>
+        </div>
+
+        <ol class="achv-list">
+          <li class="reveal"><span class="achv-medal">01</span><div><b>M.Tech in CSE — IIT Jodhpur (2025 → present)</b><p>Pursuing a Master's in Computer Science (currently 3rd semester, CGPA 7.2), building on a B.Tech in CSE from Jain University (CGPA 7.95).</p></div></li>
+          <li class="reveal"><span class="achv-medal">02</span><div><b>Active open-source contributor</b><p>Maintaining multiple public repositories on GitHub <strong>@kshitiz235</strong>.</p></div></li>
+          <li class="reveal"><span class="achv-medal">03</span><div><b>Multiple shipped projects</b><p>End-to-end work across ML, NLP, and Android — from data pipelines to mobile apps.</p></div></li>
+          <li class="reveal"><span class="achv-medal">04</span><div><b>Research experience</b><p>Intelligent healthcare chat systems and data-driven AI.</p></div></li>
+          <li class="reveal"><span class="achv-medal">05</span><div><b>Consistent DSA practice</b><p>174+ problems solved on LeetCode with steady momentum.</p></div></li>
+        </ol>
       </div>
     </section>
 
     <!-- ===== BLOG ===== -->
     <section class="section" id="blog" aria-labelledby="blogH">
-      <div class="section-head">
-        <h2 id="blogH">Professional Blog</h2>
+      <div class="section-head blog-masthead">
+        <span class="blog-eyebrow">// THE JOURNAL — Vol. 01</span>
+        <h2 id="blogH">Field Notes</h2>
         <p class="section-sub">Writing on engineering, AI, career, and the craft.</p>
       </div>
 
-      <div class="blog-grid" id="blogGrid">
-        <div class="blog-empty glass">
-          <p>No posts published yet. New writing will appear here soon.</p>
+      <div class="blog-list" id="blogGrid">
+        <div class="blog-empty">
+          <span class="blog-empty__num">—</span>
+          <div>
+            <b>The first issue is being written.</b>
+            <p>Essays on systems, AI, and the engineering craft will be published here soon.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== FUTURE ROADMAP ===== -->
+    <!-- ===== FUTURE ROADMAP (mission-map) ===== -->
     <section class="section" id="roadmap" aria-labelledby="roadH">
       <div class="section-head">
+        <span class="mm-eyebrow">// MISSION MAP</span>
         <h2 id="roadH">Future Roadmap</h2>
-        <p class="section-sub">Short-term goals, long-term vision, and career milestones.</p>
+        <p class="section-sub">A personal mission map — from where I am now to where I'm going.</p>
       </div>
 
-      <div class="bento bento--learn">
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M12 2a10 10 0 1 0 10 10M12 6v6l4 2"/></svg></div>
-          <h3>Short-Term Goals</h3>
-          <ul class="tick-list">
+      <div class="missionmap">
+        <div class="mm-track"><i class="mm-progress" id="mmProgress"></i></div>
+
+        <div class="mm-phase reveal">
+          <div class="mm-node"><span>01</span></div>
+          <div class="mm-when">Now → 6 months</div>
+          <h3>Short-Term</h3>
+          <ul>
             <li>Land a software engineering role</li>
             <li>Strengthen DSA &amp; dynamic programming</li>
             <li>Contribute to open source consistently</li>
           </ul>
-        </article>
+        </div>
 
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.7 5.5 21l2-7.5L2 9h7z"/></svg></div>
-          <h3>Long-Term Vision</h3>
-          <ul class="tick-list">
-            <li>Build innovative AI applications</li>
-            <li>Advance in cybersecurity &amp; technical analysis</li>
-            <li>Lead impactful, research-driven engineering</li>
-          </ul>
-        </article>
-
-        <article class="card glass reveal">
-          <div class="card-icon"><svg viewBox="0 0 24 24" class="ico"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3zM9 3v15M15 6v15"/></svg></div>
-          <h3>Career Milestones</h3>
-          <ul class="tick-list">
+        <div class="mm-phase reveal">
+          <div class="mm-node"><span>02</span></div>
+          <div class="mm-when">6 → 18 months</div>
+          <h3>Mid-Term</h3>
+          <ul>
+            <li>Build &amp; ship innovative AI applications</li>
             <li>Publish research papers</li>
+            <li>Deepen cybersecurity &amp; technical analysis</li>
+          </ul>
+        </div>
+
+        <div class="mm-phase reveal">
+          <div class="mm-node"><span>03</span></div>
+          <div class="mm-when">2+ years</div>
+          <h3>Long-Term</h3>
+          <ul>
+            <li>Lead impactful, research-driven engineering</li>
             <li>Ship a flagship AI product</li>
             <li>Grow into a senior engineering role</li>
           </ul>
-        </article>
+        </div>
       </div>
     </section>
 
@@ -883,6 +846,6 @@
   <!-- Chart.js (global) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- App logic + Motion-powered animations + live GitHub data -->
-  <script type="module" src="js/app.js?v=20"></script>
+  <script type="module" src="js/app.js?v=24"></script>
 </body>
 </html>
