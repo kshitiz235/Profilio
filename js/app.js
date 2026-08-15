@@ -120,7 +120,7 @@ import { supabase } from "./supabase.js";
     i = ((i % N) + N) % N;
     const el = document.getElementById(navItems[i].dataset.section);
     setActive(i);
-    crumb.textContent = spokes[i].label;
+    if (crumb) crumb.textContent = spokes[i].label;
     try { history.replaceState(null, "", "#" + navItems[i].dataset.section); } catch (e) {}
     if (opts.crossfade && !reduceMotion) {
       const main = $("#main"); main.classList.add("nav-fade");
@@ -164,6 +164,20 @@ import { supabase } from "./supabase.js";
     }, { passive: true });
     window.addEventListener("resize", wheelLayout);
 
+    // scroll over the wheel to step through sections (fulfils the "scroll" hint)
+    let wAccum = 0, wTimer = null;
+    wheelNav.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      wake();
+      wAccum += e.deltaY;
+      clearTimeout(wTimer); wTimer = setTimeout(() => (wAccum = 0), 220);
+      if (Math.abs(wAccum) >= 60) {
+        const dir = wAccum > 0 ? 1 : -1;
+        wAccum = 0;
+        navigateToSection(activeIdx + dir);
+      }
+    }, { passive: false });
+
     // drag over the wheel to rotate
     let dragging = false, startY = 0, startIdx = 0, moved = false;
     wheelEl.addEventListener("pointerdown", (e) => { dragging = true; moved = false; startY = e.clientY; startIdx = activeIdx; });
@@ -205,7 +219,7 @@ import { supabase } from "./supabase.js";
           const id = e.target.id;
           navItems.forEach((n) => n.classList.toggle("is-active", n.dataset.section === id));
           const active = navItems.find((n) => n.dataset.section === id);
-          if (active) crumb.textContent = active.querySelector("span").textContent;
+          if (active && crumb) crumb.textContent = active.querySelector("span").textContent;
           if (!navLock) {
             const idx = navItems.findIndex((n) => n.dataset.section === id);
             if (idx >= 0 && idx !== activeIdx) setActive(idx);
@@ -216,6 +230,33 @@ import { supabase } from "./supabase.js";
     { rootMargin: "-45% 0px -50% 0px" }
   );
   sections.forEach((s) => navObserver.observe(s));
+
+  /* ---------- Restore position on reload (stay on the section you were on) ---------- */
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  function restorePosition() {
+    const id = (location.hash || "").replace("#", "");
+    const idx = navItems.findIndex((n) => n.dataset.section === id);
+    if (idx <= 0) { window.scrollTo(0, 0); setActive(0); return; }
+    const el = document.getElementById(id);
+    setActive(idx);
+    if (crumb) crumb.textContent = navItems[idx].querySelector("span").textContent;
+    if (!el) return;
+
+    // Async content (charts, images, live GitHub/LeetCode) keeps growing the page
+    // after load, so a single scroll lands short. Keep the target pinned until the
+    // layout settles — but yield the moment the user scrolls themselves.
+    let stop = false;
+    const settle = () => { if (!stop) el.scrollIntoView({ behavior: "auto" }); };
+    const cancel = () => { if (stop) return; stop = true; ro.disconnect(); };
+    const ro = new ResizeObserver(settle);
+    settle();
+    ro.observe(document.body);
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach((ev) =>
+      window.addEventListener(ev, cancel, { once: true, passive: true }));
+    [200, 700, 1400, 2400].forEach((t) => setTimeout(settle, t));
+    setTimeout(cancel, 2600);
+  }
+  window.addEventListener("load", restorePosition);
 
   /* ---------- Reveal on scroll ---------- */
   const revealObserver = new IntersectionObserver(
@@ -572,6 +613,11 @@ import { supabase } from "./supabase.js";
       el.addEventListener("click", open);
       el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(e); } });
     });
+    // Adaptive layout by count: few = big showcase, more = compact grid, many = album
+    const n = projectList.length;
+    grid.classList.remove("caselist--compact", "caselist--album");
+    if (n > 8) grid.classList.add("caselist--album");
+    else if (n > 3) grid.classList.add("caselist--compact");
   }
 
   /* ---- Project detail modal ---- */
@@ -689,8 +735,60 @@ import { supabase } from "./supabase.js";
       const { data } = await supabase.from("posts").select("*").eq("published", true).order("created_at", { ascending: false });
       if (data && data.length) renderPosts(data);
     } catch (e) { console.info("Posts from Supabase unavailable.", e); }
+
+    // Research: dynamic entries (falls back to the built-in study if none/absent)
+    try {
+      const { data } = await supabase.from("research").select("*").order("sort", { ascending: true }).order("created_at", { ascending: false });
+      if (data && data.length) renderResearch(data);
+    } catch (e) { console.info("Research table not set up yet — using built-in study.", e); }
+
+    // Achievements: certifications, awards & milestones (falls back to built-in list)
+    try {
+      const { data } = await supabase.from("achievements").select("*").order("sort", { ascending: true }).order("created_at", { ascending: false });
+      if (data && data.length) renderAchievements(data);
+    } catch (e) { console.info("Achievements table not set up yet — using built-in list.", e); }
   }
   loadContent();
+
+  /* ---- Achievements (dynamic, kind-tagged, adaptive) ---- */
+  function renderAchievements(list) {
+    const ol = $("#achvList");
+    if (!ol) return;
+    ol.classList.toggle("achv-list--many", list.length > 6);
+    ol.innerHTML = list.map((a, i) => {
+      const kind = a.kind ? `<span class="achv-kind" data-kind="${esc((a.kind || "").toLowerCase())}">${esc(a.kind)}</span>` : "";
+      const metaBits = [a.issuer, a.date].filter(Boolean).map(esc).join(" · ");
+      const link = a.link ? `<a class="achv-link" href="${esc(a.link)}" target="_blank" rel="noopener">view ↗</a>` : "";
+      const metaLine = (metaBits || link) ? `<p class="achv-meta">${metaBits}${metaBits && link ? " · " : ""}${link}</p>` : "";
+      return `<li><span class="achv-medal">${String(i + 1).padStart(2, "0")}</span><div><b>${esc(a.title)} ${kind}</b>${a.detail ? `<p>${esc(a.detail)}</p>` : ""}${metaLine}</div></li>`;
+    }).join("");
+  }
+
+  /* ---- Research (dynamic, adaptive by count) ---- */
+  function renderResearch(list) {
+    const wrap = $("#researchList");
+    if (!wrap) return;
+    const many = list.length > 3;
+    wrap.classList.toggle("rs-list--many", many);
+    wrap.innerHTML = list.map((r) => {
+      const tags = (r.tags || []).map((t) => `<span>${esc(t)}</span>`).join("");
+      const link = r.link ? `<a class="rs-link" href="${esc(r.link)}" target="_blank" rel="noopener">Read ↗</a>` : "";
+      if (many) {
+        return `<div class="rs-row">
+          <div><span class="rs-row__status">${esc(r.status || "Study")}</span><b>${esc(r.title)}</b>${r.field ? `<i>${esc(r.field)}</i>` : ""}</div>
+          ${link}
+        </div>`;
+      }
+      return `<div class="rs-paper">
+        <span class="rs-tag">${esc(r.status || "STUDY")}</span>
+        <h3>${esc(r.title)}</h3>
+        ${r.field ? `<div class="rs-meta"><span>Field —</span> ${esc(r.field)}</div>` : ""}
+        ${r.abstract ? `<p class="rs-abstract">${esc(r.abstract)}</p>` : ""}
+        ${tags ? `<div class="case__tech">${tags}</div>` : ""}
+        ${link}
+      </div>`;
+    }).join("");
+  }
 
   /* ===================== LIVE LEETCODE (DSA) ===================== */
   async function loadLeetCode() {
@@ -801,12 +899,12 @@ import { supabase } from "./supabase.js";
 
   // Lightweight rule-based "career assistant"
   const KB = [
-    { k: ["skill", "strong", "stack", "tech", "good at", "language"], a: "Kshitiz's strongest areas are <strong>software engineering, AI/ML, and data</strong>. Core languages: <strong>Python, Java, SQL, JavaScript, C++</strong>; web with <strong>React + Node.js</strong>; plus Git, Linux, Docker, and multimedia tech (GStreamer, Chromium, webOS)." },
-    { k: ["backend", "fullstack", "full stack", "ai", "fit", "role", "hire", "engineer"], a: "Strong fit for <strong>software engineering, full-stack, and AI/data roles</strong>. He has an M.Tech & B.Tech in CSE (GPA 7.95/10), a 6-month LG Electronics internship in multimedia platform development, and hands-on ML/NLP/Android projects." },
+    { k: ["skill", "strong", "stack", "tech", "good at", "language"], a: "Kshitiz's strongest areas are <strong>software engineering, AI/ML, and data</strong>. Core languages: <strong>Python, Java, SQL, JavaScript, C++</strong>; web with <strong>React + Node.js</strong>; plus Git, Linux, Docker, and hands-on ML/NLP work." },
+    { k: ["backend", "fullstack", "full stack", "ai", "fit", "role", "hire", "engineer"], a: "Strong fit for <strong>software engineering, full-stack, and AI/data roles</strong>. He holds a <strong>B.Tech in CSE</strong> (CGPA 7.95/10) and is pursuing an <strong>M.Tech in CSE at IIT Jodhpur</strong> (currently 3rd semester), with hands-on ML/NLP/Android projects and research." },
     { k: ["frontend", "react", "web", "ui"], a: "Yes · Kshitiz works full-stack on the web: <strong>HTML, CSS, JavaScript, React, and Node.js</strong>, backed by MySQL/SQL databases." },
-    { k: ["lg", "internship", "intern", "multimedia", "gstreamer", "webos", "chromium"], a: "At <strong>LG Electronics (6 months)</strong> Kshitiz worked on multimedia platform development: the <strong>GStreamer</strong> framework, <strong>Chromium</strong> integration, the <strong>UMedia Server</strong>, media pipelines, HAL integration, and <strong>webOS</strong> platform technologies." },
-    { k: ["achievement", "award", "win", "proud", "biggest", "education", "degree", "gpa"], a: "Highlights: <strong>Master's in CSE</strong> (GPA 7.95/10), the LG Electronics internship, multiple ML/NLP/Android projects, research in health-bot systems, and active open-source contributions." },
-    { k: ["experience", "background", "history", "journey"], a: "Academic path from B.Tech to a Master's in CSE, a 6-month LG Electronics internship in multimedia platforms, plus research and several independent projects." },
+    { k: ["internship", "intern", "hands-on", "practical", "applied"], a: "Kshitiz's hands-on experience comes from <strong>research and independent projects</strong> rather than a formal internship — an NLP healthcare chatbot, an ML price-comparison system, and an Android app, plus open-source work on GitHub. He's <strong>open to internships and full-time roles</strong>." },
+    { k: ["achievement", "award", "win", "proud", "biggest", "education", "degree", "gpa"], a: "Highlights: <strong>B.Tech in CSE</strong> (CGPA 7.95/10) and an ongoing <strong>M.Tech at IIT Jodhpur</strong>, multiple ML/NLP/Android projects, research in health-bot systems, 174+ LeetCode problems solved, and active open-source contributions." },
+    { k: ["experience", "background", "history", "journey"], a: "Academic path from a <strong>B.Tech in CSE</strong> (Jain University) to an <strong>M.Tech in CSE at IIT Jodhpur</strong> (in progress), alongside research in intelligent healthcare chat systems and several independent projects." },
     { k: ["project", "build", "ship", "work", "deals", "health", "bot", "instagram", "reels"], a: "Featured projects: <strong>Deals Management System</strong> (ML + web scraping price comparison), <strong>Health Bot Chat System</strong> (NLP healthcare chatbot), and <strong>Instagram Reels Limiter</strong> (Android usage-control app). See the Projects section for details." },
     { k: ["learn", "study", "course", "cert", "dsa", "algorithm"], a: "Currently leveling up <strong>Advanced DSA, Dynamic Programming, AI, Cybersecurity, and Technical Analysis</strong>. Goals include publishing research and contributing to open source." },
     { k: ["research", "publication", "paper", "nlp"], a: "Research interests span <strong>AI, health technology, intelligent chat systems, data analytics, and HCI</strong> · including work on an NLP-driven healthcare chatbot, with plans to publish peer-reviewed papers." },
@@ -963,7 +1061,7 @@ import { supabase } from "./supabase.js";
   const stepFields = ["cName", "cEmail", "cMsg"]; // one per content step
   const termNext = $("#termNext"), termBack = $("#termBack"), termSubmit = $("#contactSubmit"), termProgress = $("#termProgress");
   let curStep = 0;
-  function showStep(i) {
+  function showStep(i, doFocus = true) {
     curStep = Math.max(0, Math.min(stepEls.length - 1, i));
     stepEls.forEach((s, idx) => s.classList.toggle("is-active", idx === curStep));
     if (termProgress) termProgress.style.width = ((curStep + 1) / stepEls.length) * 100 + "%";
@@ -979,7 +1077,7 @@ import { supabase } from "./supabase.js";
         <div><span>Message</span><b>${(($("#cMsg").value) || "—").replace(/</g, "&lt;")}</b></div>`;
     }
     const inp = stepEls[curStep].querySelector("input, textarea");
-    if (inp) setTimeout(() => inp.focus(), 60);
+    if (inp && doFocus) setTimeout(() => inp.focus({ preventScroll: true }), 60);
   }
   if (termNext) termNext.addEventListener("click", () => {
     if (curStep < stepFields.length) {
@@ -992,7 +1090,7 @@ import { supabase } from "./supabase.js";
   if (termBack) termBack.addEventListener("click", () => showStep(curStep - 1));
   // Enter advances (except in the textarea)
   ["cName", "cEmail"].forEach((id) => $("#" + id)?.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); termNext.click(); } }));
-  showStep(0);
+  showStep(0, false);
 
   // To receive messages straight to your inbox: create a free form at https://formspree.io
   // and paste its endpoint here (e.g. "https://formspree.io/f/xxxxxx"). Leave blank to use mailto.

@@ -25,7 +25,7 @@
   <!-- Fonts: Newsreader (editorial serif display) + DM Sans (UI/body) + JetBrains Mono (labels) -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=24" />
+  <link rel="stylesheet" href="css/styles.css?v=27" />
 </head>
 <body>
   <!-- Skip link for keyboard users -->
@@ -136,11 +136,6 @@
       <svg viewBox="0 0 24 24" class="ico"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
 
-    <div class="breadcrumb">
-      <span class="crumb-muted">Dashboard</span>
-      <svg viewBox="0 0 24 24" class="ico ico-xs"><path d="M9 6l6 6-6 6"/></svg>
-      <span class="crumb-current" id="crumbCurrent">Overview</span>
-    </div>
 
     <div class="topbar__actions">
       <div class="kbd-hint" aria-hidden="true"><kbd>Ctrl</kbd><kbd>K</kbd></div>
@@ -207,7 +202,7 @@
         <div class="hero__stats">
             <div class="stat-tile">
               <span class="stat-num" data-count="7.95" data-decimals="2">0</span>
-              <span class="stat-label">GPA / 10</span>
+              <span class="stat-label">B.Tech GPA / 10</span>
             </div>
             <div class="stat-tile">
               <span class="stat-num" id="statRepos" data-count="0">0</span><span class="stat-suffix" id="statReposSuffix"></span>
@@ -475,14 +470,16 @@
         </div>
 
         <div class="rs-right reveal">
-          <div class="rs-paper">
-            <span class="rs-tag">ACTIVE STUDY</span>
-            <h3>Intelligent Healthcare Chat Systems</h3>
-            <div class="rs-meta"><span>Field —</span> NLP · Healthcare AI · HCI</div>
-            <p class="rs-abstract">An NLP-driven assistant that interprets health-related queries and returns helpful, safe recommendations, with a focus on reliability and explainability.</p>
-            <div class="rs-method">
-              <span class="rs-k">Methodology</span>
-              <div class="rs-steps"><span>01 · Collect</span><span>02 · Model (NLP)</span><span>03 · Evaluate</span><span>04 · Refine</span></div>
+          <div id="researchList">
+            <div class="rs-paper">
+              <span class="rs-tag">ACTIVE STUDY</span>
+              <h3>Intelligent Healthcare Chat Systems</h3>
+              <div class="rs-meta"><span>Field —</span> NLP · Healthcare AI · HCI</div>
+              <p class="rs-abstract">An NLP-driven assistant that interprets health-related queries and returns helpful, safe recommendations, with a focus on reliability and explainability.</p>
+              <div class="rs-method">
+                <span class="rs-k">Methodology</span>
+                <div class="rs-steps"><span>01 · Collect</span><span>02 · Model (NLP)</span><span>03 · Evaluate</span><span>04 · Refine</span></div>
+              </div>
             </div>
           </div>
           <div class="rs-block">
@@ -566,12 +563,11 @@
           </div>
         </div>
 
-        <ol class="achv-list">
-          <li class="reveal"><span class="achv-medal">01</span><div><b>M.Tech in CSE — IIT Jodhpur (2025 → present)</b><p>Pursuing a Master's in Computer Science (currently 3rd semester, CGPA 7.2), building on a B.Tech in CSE from Jain University (CGPA 7.95).</p></div></li>
-          <li class="reveal"><span class="achv-medal">02</span><div><b>Active open-source contributor</b><p>Maintaining multiple public repositories on GitHub <strong>@kshitiz235</strong>.</p></div></li>
-          <li class="reveal"><span class="achv-medal">03</span><div><b>Multiple shipped projects</b><p>End-to-end work across ML, NLP, and Android — from data pipelines to mobile apps.</p></div></li>
-          <li class="reveal"><span class="achv-medal">04</span><div><b>Research experience</b><p>Intelligent healthcare chat systems and data-driven AI.</p></div></li>
-          <li class="reveal"><span class="achv-medal">05</span><div><b>Consistent DSA practice</b><p>174+ problems solved on LeetCode with steady momentum.</p></div></li>
+        <ol class="achv-list" id="achvList">
+          <li class="reveal"><span class="achv-medal">01</span><div><b>Consistent DSA practice <span class="achv-kind" data-kind="milestone">Milestone</span></b><p>174+ problems solved on LeetCode <strong>@technicalwarriorscgp</strong> with steady momentum.</p></div></li>
+          <li class="reveal"><span class="achv-medal">02</span><div><b>Active open-source contributor <span class="achv-kind" data-kind="milestone">Milestone</span></b><p>Maintaining multiple public repositories on GitHub <strong>@kshitiz235</strong>.</p></div></li>
+          <li class="reveal"><span class="achv-medal">03</span><div><b>Multiple shipped projects <span class="achv-kind" data-kind="milestone">Milestone</span></b><p>End-to-end work across ML, NLP, and Android — from data pipelines to mobile apps.</p></div></li>
+          <li class="reveal"><span class="achv-medal">04</span><div><b>Research experience <span class="achv-kind" data-kind="milestone">Milestone</span></b><p>Intelligent healthcare chat systems and data-driven AI.</p></div></li>
         </ol>
       </div>
     </section>
@@ -788,7 +784,7 @@
 
     <div class="ai-suggest" id="aiSuggest">
       <button class="suggest-chip">Strongest skills?</button>
-      <button class="suggest-chip">LG internship?</button>
+      <button class="suggest-chip">Research work?</button>
       <button class="suggest-chip">Best projects?</button>
       <button class="suggest-chip">How to contact?</button>
     </div>
@@ -865,6 +861,6 @@
   <!-- Chart.js (global) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- App logic + Motion-powered animations + live GitHub data -->
-  <script type="module" src="js/app.js?v=25"></script>
+  <script type="module" src="js/app.js?v=30"></script>
 </body>
 </html>

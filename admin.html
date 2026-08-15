@@ -49,6 +49,8 @@
     <nav class="admin-tabs">
       <button class="admin-tab is-active" data-tab="profile">Profile</button>
       <button class="admin-tab" data-tab="projects">Projects</button>
+      <button class="admin-tab" data-tab="research">Research</button>
+      <button class="admin-tab" data-tab="achievements">Achievements</button>
       <button class="admin-tab" data-tab="blog">Blog</button>
     </nav>
 
@@ -123,6 +125,67 @@
           </div>
         </form>
         <div class="admin-list" id="projectList"></div>
+      </section>
+
+      <!-- RESEARCH -->
+      <section class="admin-panel" id="panel-research">
+        <div class="panel-head"><h2>Research</h2><p>Studies, papers, and research work. With 4+ entries the site auto-switches to a compact list.</p></div>
+        <form class="admin-form glass" id="researchForm">
+          <input type="hidden" id="res_id" />
+          <div class="grid-2">
+            <div class="field"><label>Title *</label><input id="res_title" type="text" required /></div>
+            <div class="field"><label>Status</label><input id="res_status" type="text" placeholder="Active study / Published / In review" /></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Field</label><input id="res_field" type="text" placeholder="NLP · Healthcare AI" /></div>
+            <div class="field"><label>Link (paper / repo)</label><input id="res_link" type="url" /></div>
+          </div>
+          <div class="field"><label>Abstract / summary</label><textarea id="res_abstract" rows="3"></textarea></div>
+          <div class="grid-2">
+            <div class="field"><label>Tags (comma separated)</label><input id="res_tags" type="text" placeholder="NLP, Healthcare AI" /></div>
+            <div class="field"><label>Sort order (lower = first)</label><input id="res_sort" type="number" value="0" /></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="resSave">Add research</button>
+            <button class="btn btn-ghost" type="button" id="resReset" hidden>Cancel edit</button>
+            <span class="save-note" id="resNote" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+        <div class="admin-list" id="researchAdminList"></div>
+      </section>
+
+      <!-- ACHIEVEMENTS -->
+      <section class="admin-panel" id="panel-achievements">
+        <div class="panel-head"><h2>Achievements</h2><p>Certifications, awards, competition results, publications &amp; milestones — not degrees (those live in the Journey section). With 7+ entries the site auto-compacts.</p></div>
+        <form class="admin-form glass" id="achForm">
+          <input type="hidden" id="ach_id" />
+          <div class="grid-2">
+            <div class="field"><label>Title *</label><input id="ach_title" type="text" required placeholder="AWS Certified Cloud Practitioner" /></div>
+            <div class="field"><label>Kind</label>
+              <select id="ach_kind">
+                <option>Certification</option>
+                <option>Award</option>
+                <option>Publication</option>
+                <option>Milestone</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>Detail</label><textarea id="ach_detail" rows="2" placeholder="Short description of what it is / what you did."></textarea></div>
+          <div class="grid-2">
+            <div class="field"><label>Issuer / org</label><input id="ach_issuer" type="text" placeholder="Amazon Web Services" /></div>
+            <div class="field"><label>Date</label><input id="ach_date" type="text" placeholder="Jun 2026" /></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Link (credential / proof)</label><input id="ach_link" type="url" /></div>
+            <div class="field"><label>Sort order (lower = first)</label><input id="ach_sort" type="number" value="0" /></div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="achSave">Add achievement</button>
+            <button class="btn btn-ghost" type="button" id="achReset" hidden>Cancel edit</button>
+            <span class="save-note" id="achNote" role="status" aria-live="polite"></span>
+          </div>
+        </form>
+        <div class="admin-list" id="achAdminList"></div>
       </section>
 
       <!-- BLOG -->

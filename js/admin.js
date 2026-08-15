@@ -44,7 +44,7 @@ document.querySelectorAll(".admin-tab").forEach((tab) => {
   });
 });
 
-function loadAll() { loadProfile(); loadProjects(); loadPosts(); }
+function loadAll() { loadProfile(); loadProjects(); loadResearch(); loadAchievements(); loadPosts(); }
 
 /* ===================== PROFILE ===================== */
 let avatarUrl = "";
@@ -154,6 +154,116 @@ $("#projectForm").addEventListener("submit", async (e) => {
   btn.disabled = false; btn.textContent = id ? "Update project" : "Add project";
   if (error) { setNote($("#projNote"), error.message, false); return; }
   setNote($("#projNote"), "Saved ✓"); resetProjectForm(); loadProjects();
+});
+
+/* ===================== RESEARCH ===================== */
+function resetResearchForm() {
+  $("#researchForm").reset(); $("#res_id").value = "";
+  $("#resSave").textContent = "Add research"; $("#resReset").hidden = true; setNote($("#resNote"), "");
+}
+$("#resReset").addEventListener("click", resetResearchForm);
+
+async function loadResearch() {
+  const { data } = await supabase.from("research").select("*").order("sort", { ascending: true }).order("created_at", { ascending: false });
+  const list = $("#researchAdminList");
+  if (!data || !data.length) { list.innerHTML = '<div class="empty-note">No research entries yet. Your site shows the built-in study until you add one.</div>'; return; }
+  list.innerHTML = data.map((r) => `
+    <div class="list-item">
+      <div class="list-item__body"><strong>${esc(r.title)} ${r.status ? `<span class="badge-draft">${esc(r.status)}</span>` : ""}</strong><span>${esc(r.field || (r.tags || []).join(", "))}</span></div>
+      <div class="list-actions">
+        <button class="icon-btn sm" data-edit="${r.id}" aria-label="Edit">${editIcon}</button>
+        <button class="icon-btn sm danger" data-del="${r.id}" aria-label="Delete">${delIcon}</button>
+      </div>
+    </div>`).join("");
+  list.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => editResearch(data.find((x) => x.id === b.dataset.edit))));
+  list.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => deleteResearch(b.dataset.del)));
+}
+
+function editResearch(r) {
+  $("#res_id").value = r.id; $("#res_title").value = r.title || ""; $("#res_status").value = r.status || "";
+  $("#res_field").value = r.field || ""; $("#res_link").value = r.link || "";
+  $("#res_abstract").value = r.abstract || ""; $("#res_tags").value = (r.tags || []).join(", ");
+  $("#res_sort").value = r.sort ?? 0;
+  $("#resSave").textContent = "Update research"; $("#resReset").hidden = false;
+  document.querySelector('.admin-tab[data-tab="research"]').click();
+  $("#researchForm").scrollIntoView({ behavior: "smooth" });
+}
+
+async function deleteResearch(id) {
+  if (!confirm("Delete this research entry?")) return;
+  const { error } = await supabase.from("research").delete().eq("id", id);
+  if (error) alert(error.message); else loadResearch();
+}
+
+$("#researchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("#resSave"); btn.disabled = true; btn.textContent = "Saving…";
+  const payload = {
+    title: $("#res_title").value.trim(), status: $("#res_status").value.trim(),
+    field: $("#res_field").value.trim(), link: $("#res_link").value.trim(),
+    abstract: $("#res_abstract").value.trim(),
+    tags: $("#res_tags").value.split(",").map((t) => t.trim()).filter(Boolean),
+    sort: parseInt($("#res_sort").value, 10) || 0,
+  };
+  const id = $("#res_id").value;
+  const { error } = id ? await supabase.from("research").update(payload).eq("id", id) : await supabase.from("research").insert([payload]);
+  btn.disabled = false; btn.textContent = id ? "Update research" : "Add research";
+  if (error) { setNote($("#resNote"), error.message, false); return; }
+  setNote($("#resNote"), "Saved ✓"); resetResearchForm(); loadResearch();
+});
+
+/* ===================== ACHIEVEMENTS ===================== */
+function resetAchForm() {
+  $("#achForm").reset(); $("#ach_id").value = "";
+  $("#achSave").textContent = "Add achievement"; $("#achReset").hidden = true; setNote($("#achNote"), "");
+}
+$("#achReset").addEventListener("click", resetAchForm);
+
+async function loadAchievements() {
+  const { data } = await supabase.from("achievements").select("*").order("sort", { ascending: true }).order("created_at", { ascending: false });
+  const list = $("#achAdminList");
+  if (!data || !data.length) { list.innerHTML = '<div class="empty-note">No achievements yet. Your site shows the built-in milestones until you add one.</div>'; return; }
+  list.innerHTML = data.map((a) => `
+    <div class="list-item">
+      <div class="list-item__body"><strong>${esc(a.title)} ${a.kind ? `<span class="badge-draft">${esc(a.kind)}</span>` : ""}</strong><span>${esc([a.issuer, a.date].filter(Boolean).join(" · "))}</span></div>
+      <div class="list-actions">
+        <button class="icon-btn sm" data-edit="${a.id}" aria-label="Edit">${editIcon}</button>
+        <button class="icon-btn sm danger" data-del="${a.id}" aria-label="Delete">${delIcon}</button>
+      </div>
+    </div>`).join("");
+  list.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => editAchievement(data.find((x) => x.id === b.dataset.edit))));
+  list.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => deleteAchievement(b.dataset.del)));
+}
+
+function editAchievement(a) {
+  $("#ach_id").value = a.id; $("#ach_title").value = a.title || ""; $("#ach_kind").value = a.kind || "Certification";
+  $("#ach_detail").value = a.detail || ""; $("#ach_issuer").value = a.issuer || "";
+  $("#ach_date").value = a.date || ""; $("#ach_link").value = a.link || ""; $("#ach_sort").value = a.sort ?? 0;
+  $("#achSave").textContent = "Update achievement"; $("#achReset").hidden = false;
+  document.querySelector('.admin-tab[data-tab="achievements"]').click();
+  $("#achForm").scrollIntoView({ behavior: "smooth" });
+}
+
+async function deleteAchievement(id) {
+  if (!confirm("Delete this achievement?")) return;
+  const { error } = await supabase.from("achievements").delete().eq("id", id);
+  if (error) alert(error.message); else loadAchievements();
+}
+
+$("#achForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = $("#achSave"); btn.disabled = true; btn.textContent = "Saving…";
+  const payload = {
+    title: $("#ach_title").value.trim(), kind: $("#ach_kind").value,
+    detail: $("#ach_detail").value.trim(), issuer: $("#ach_issuer").value.trim(),
+    date: $("#ach_date").value.trim(), link: $("#ach_link").value.trim(),
+    sort: parseInt($("#ach_sort").value, 10) || 0,
+  };
+  const id = $("#ach_id").value;
+  const { error } = id ? await supabase.from("achievements").update(payload).eq("id", id) : await supabase.from("achievements").insert([payload]);
+  btn.disabled = false; btn.textContent = id ? "Update achievement" : "Add achievement";
+  if (error) { setNote($("#achNote"), error.message, false); return; }
+  setNote($("#achNote"), "Saved ✓"); resetAchForm(); loadAchievements();
 });
 
 /* ===================== BLOG ===================== */
