@@ -141,7 +141,10 @@ import { supabase } from "./supabase.js";
       const name = n.querySelector("span").textContent;
       b.setAttribute("aria-label", "Go to " + name); b.title = name;
       b.innerHTML = n.querySelector("svg").outerHTML;
-      b.addEventListener("click", () => navigateToSection(i));
+      b.addEventListener("click", () => {
+        if (i === activeIdx) return;                     // already here
+        curtainReveal(i, i > activeIdx ? "down" : "up"); // curtain-in instead of a long scroll-through
+      });
       b.addEventListener("mouseenter", () => { wheelEl.classList.add("hovering"); setLabel(i); });
       wheelEl.insertBefore(b, label);
       return { el: b, id: n.dataset.section, label: name };
@@ -192,6 +195,86 @@ import { supabase } from "./supabase.js";
   }
   initWheel();
 
+  // "Curtain" navigation: a full-viewport copy of the destination section slides in over the
+  // current one from the direction of travel — going to a LATER section it rises up from the
+  // bottom; to an EARLIER section it drops down from the top. No visible scroll-through; once
+  // the curtain covers everything we silently jump the real page to the destination behind it.
+  // Used by both the loop-wrap (Contact<->Home) and the wheel-nav spoke clicks.
+  let curtainBusy = false;
+  function curtainReveal(targetIdx, dir) {
+    if (curtainBusy) return;
+    targetIdx = ((targetIdx % N) + N) % N;
+    const targetId = navItems[targetIdx].dataset.section;
+    const src = document.getElementById(targetId);
+    const commit = () => {
+      // Use scrollIntoView. `window.scrollTo(0,0)` does NOT move this page (body has
+      // `overflow-x: clip`, so the window isn't the scroll container); scrollIntoView finds the
+      // real scroll container and works in both directions.
+      if (src) src.scrollIntoView({ block: "start" });
+      setActive(targetIdx);
+      if (crumb) crumb.textContent = spokes[targetIdx].label;
+      try { history.replaceState(null, "", "#" + targetId); } catch (e) {}
+    };
+    if (reduceMotion || !src) { commit(); return; }
+
+    const veil = document.createElement("div");
+    veil.className = "loop-veil";
+    const box = document.createElement("div");
+    box.className = "loop-veil__box";
+    // Align the copy to exactly where scrollIntoView will rest the real section (its top sits
+    // at the container's scroll-padding-top), so there's no vertical jump when the curtain lifts.
+    box.style.paddingTop = getComputedStyle(document.documentElement).scrollPaddingTop || "84px";
+    const clone = src.cloneNode(true);
+    clone.removeAttribute("id");
+    clone.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+    clone.classList.add("in");
+    clone.querySelectorAll(".reveal").forEach((n) => n.classList.add("in")); // show content in the copy
+    clone.style.marginBottom = "0";
+    // Cloned <canvas> elements are blank — copy the live chart bitmaps into the copies.
+    const liveCanvases = src.querySelectorAll("canvas");
+    clone.querySelectorAll("canvas").forEach((cc, i) => {
+      const orig = liveCanvases[i];
+      if (!orig || !orig.width || !orig.height) return;
+      cc.width = orig.width; cc.height = orig.height;
+      try { cc.getContext("2d").drawImage(orig, 0, 0); } catch (e) {}
+    });
+    box.appendChild(clone);
+    veil.appendChild(box);
+    veil.style.transform = dir === "down" ? "translateY(100%)" : "translateY(-100%)"; // start off-screen
+    document.body.appendChild(veil);
+    void veil.offsetWidth;                     // lock the start position
+    veil.style.transform = "translateY(0)";    // slide the curtain fully into view
+    curtainBusy = true;
+
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      // Hard-jump the real page behind the curtain. `scroll-behavior: smooth` is set in CSS
+      // and would otherwise ANIMATE this jump (you'd watch the page scroll). Force auto on
+      // both scroll roots for the jump, then restore it on the next frame.
+      const de = document.documentElement, bd = document.body;
+      const p1 = de.style.scrollBehavior, p2 = bd.style.scrollBehavior;
+      de.style.scrollBehavior = "auto"; bd.style.scrollBehavior = "auto";
+      commit();                                // real page snaps to the destination, hidden behind the veil
+      // Hold the curtain until the real page has PAINTED at its new scroll position — removing
+      // it in the same frame flashes a copy of the old position (the "double image" / blink).
+      const lift = () => {
+        veil.remove();
+        de.style.scrollBehavior = p1; bd.style.scrollBehavior = p2;
+        curtainBusy = false;
+      };
+      requestAnimationFrame(() => requestAnimationFrame(lift)); // after paint (normal path)
+      setTimeout(lift, 160);                                    // fallback if rAF is throttled (bg tab)
+    };
+    veil.addEventListener("transitionend", (e) => { if (e.propertyName === "transform") finish(); }, { once: true });
+    setTimeout(finish, 900);                   // safety net if transitionend never fires
+  }
+
+  // Loop-wrap shim (Contact -> Home rises from below; Home -> Contact drops from above).
+  function loopReveal(dir) {
+    curtainReveal(dir === "down" ? 0 : N - 1, dir);
+  }
+
   /* ---------- Circular scroll: wrap Contact -> Overview (and Overview -> Contact) ---------- */
   (function circularScroll() {
     let accum = 0, accTimer = null;
@@ -206,7 +289,8 @@ import { supabase } from "./supabase.js";
       clearTimeout(accTimer); accTimer = setTimeout(() => (accum = 0), 240);
       if (accum > 150) {
         accum = 0; navLock = true;
-        navigateToSection(atBottom ? 0 : N - 1, { crossfade: true });
+        if (atBottom) loopReveal("down");   // past the bottom → Home rises up from below
+        else loopReveal("up");              // past the top → Contact drops down from above
         setTimeout(() => (navLock = false), 1000);
       }
     }, { passive: true });
