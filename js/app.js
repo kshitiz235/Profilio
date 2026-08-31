@@ -143,7 +143,11 @@ import { supabase } from "./supabase.js";
       b.innerHTML = n.querySelector("svg").outerHTML;
       b.addEventListener("click", () => {
         if (i === activeIdx) return;                     // already here
-        curtainReveal(i, i > activeIdx ? "down" : "up"); // curtain-in instead of a long scroll-through
+        // Curtain ONLY for the Contact <-> Home end-to-end jump (the long scroll-through the
+        // user wanted replaced). Every other section uses a normal smooth scroll.
+        const endJump = (i === 0 && activeIdx === N - 1) || (i === N - 1 && activeIdx === 0);
+        if (endJump) curtainReveal(i, i > activeIdx ? "down" : "up");
+        else navigateToSection(i);
       });
       b.addEventListener("mouseenter", () => { wheelEl.classList.add("hovering"); setLabel(i); });
       wheelEl.insertBefore(b, label);

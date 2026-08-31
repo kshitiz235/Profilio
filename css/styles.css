@@ -221,7 +221,7 @@ body::before {
   border-radius: 0; border-left: none; border-top: none; border-right: none;
   z-index: 50;
 }
-.topbar__menu { display: none; }
+.topbar .topbar__menu { display: none; } /* mobile-only menu button; hidden on desktop (specificity beats .icon-btn) */
 .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
 .crumb-muted { color: var(--text-faint); }
 .crumb-current { font-weight: 600; }
@@ -1113,7 +1113,7 @@ a.ctile:hover .ctile-arrow { opacity: 1; transform: none; }
   .sidebar.open { transform: translateX(0); }
   .sidebar__close { display: grid; }
   .topbar { left: 0; }
-  .topbar__menu { display: grid; }
+  .topbar .topbar__menu { display: grid; }
   .main { margin-left: 0; padding: calc(var(--topbar-h) + 22px) 18px 36px; }
   .topbar__resume span, .kbd-hint { display: none; }
 }
